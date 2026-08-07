@@ -16,6 +16,7 @@ from clab.data.loader import CompanyData
 from clab.errors import CreditLabError
 from clab.events import fallen_angel, hard_event
 from clab.horserace import (
+    MIN_OBSERVATIONS_BEFORE_EVENT,
     N_RISKIEST,
     PERSISTENCE_DAYS,
     alarm_date,
@@ -26,9 +27,19 @@ from clab.horserace import (
 from clab.impact import measure
 from clab.pointintime import PUBLICATION_LAG_DAYS
 from clab.scores import altman, merton, ohlson
+from clab.scores.thresholds import academic_flags
 from clab.universe import CONTROLS, STRESSED
 
 SCORE_NAMES = ("altman", "ohlson", "merton")
+
+VARIANTS: tuple[dict, ...] = (
+    {"label": "headline", "lag_days": 90, "persistence": 20, "n_riskiest": 3},
+    {"label": "lag 60", "lag_days": 60, "persistence": 20, "n_riskiest": 3},
+    {"label": "lag 120", "lag_days": 120, "persistence": 20, "n_riskiest": 3},
+    {"label": "persistence 10", "lag_days": 90, "persistence": 10, "n_riskiest": 3},
+    {"label": "persistence 40", "lag_days": 90, "persistence": 40, "n_riskiest": 3},
+    {"label": "tercile", "lag_days": 90, "persistence": 20, "n_riskiest": 4},
+)
 
 
 @dataclass(frozen=True)
@@ -39,6 +50,9 @@ class Result:
     impacts: pd.DataFrame
     failures: dict[str, str]
     common_sample: list[str]
+    secondary: pd.DataFrame
+    academic: pd.DataFrame
+    insufficient: dict[str, str]
 
 
 def build_scores(
@@ -139,6 +153,30 @@ def run(
         and all(scores[name][company.ticker].notna().any() for name in SCORE_NAMES)
     ]
 
+    # A score can have a column for a stressed name and still not have enough history
+    # in front of that name's event to state a lead time honestly. Emeis' proceeding
+    # opens before any statement in the fixture is published, so no accounting score
+    # ever reaches MIN_OBSERVATIONS_BEFORE_EVENT for it -- that is the finding, not a
+    # bug, and it is recorded here rather than silently producing a number anyway.
+    insufficient: dict[str, str] = {}
+    for name, frame in scores.items():
+        for company in STRESSED:
+            if company.ticker not in frame.columns:
+                continue
+            target = hard_event(company.ticker).date
+            observed = frame[company.ticker].loc[:target].notna().sum()
+            if observed < MIN_OBSERVATIONS_BEFORE_EVENT:
+                message = (
+                    f"{company.ticker}: only {observed} {name} observations before "
+                    f"{target.date()}; a lead time computed on that is a number, not a "
+                    "measurement"
+                )
+                insufficient[f"{name}:{company.ticker}"] = message
+                lead_rows.setdefault(company.ticker, {})[name] = None
+
+    secondary = secondary_leads(scores, n_riskiest, persistence)
+    academic = academic_flags(scores)
+
     return Result(
         scores=scores,
         leads=pd.DataFrame(lead_rows).T.reindex(columns=list(SCORE_NAMES)),
@@ -146,4 +184,56 @@ def run(
         impacts=pd.DataFrame(impact_rows),
         failures=failures,
         common_sample=common,
+        secondary=secondary,
+        academic=academic,
+        insufficient=insufficient,
     )
+
+
+def secondary_leads(
+    scores: dict[str, pd.DataFrame],
+    n_riskiest: int = N_RISKIEST,
+    persistence: int = PERSISTENCE_DAYS,
+) -> pd.DataFrame:
+    """Lead times against the fallen-angel target, for the two names that have one.
+
+    Published beside the primary table, never averaged into it: two observations are
+    a cross-check, not a statistic.
+    """
+    rows: dict[str, dict[str, float | None]] = {}
+    for name, frame in scores.items():
+        flags = raw_flags(frame, n_riskiest)
+        for company in STRESSED:
+            event = fallen_angel(company.ticker)
+            if event is None or company.ticker not in flags.columns:
+                continue
+            alarm = alarm_date(flags[company.ticker], persistence)
+            rows.setdefault(company.ticker, {})[name] = lead_months(alarm, event.date)
+    return pd.DataFrame(rows).T.reindex(columns=list(SCORE_NAMES))
+
+
+def robustness(
+    loaded: dict[str, CompanyData],
+    rates: pd.DataFrame,
+    deflator: pd.Series,
+    fx: pd.DataFrame,
+) -> pd.DataFrame:
+    """Median lead per score under each convention.
+
+    A ranking that flips between variants is a null result, and reads as one.
+    """
+    rows = []
+    for variant in VARIANTS:
+        result = run(
+            loaded,
+            rates,
+            deflator,
+            fx,
+            lag_days=variant["lag_days"],
+            n_riskiest=variant["n_riskiest"],
+            persistence=variant["persistence"],
+        )
+        row = {"variant": variant["label"]}
+        row.update({name: result.leads[name].median() for name in SCORE_NAMES})
+        rows.append(row)
+    return pd.DataFrame(rows).set_index("variant")
