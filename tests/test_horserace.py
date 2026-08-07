@@ -9,6 +9,7 @@ import pytest
 
 from clab.horserace import (
     PERSISTENCE_DAYS,
+    TRADING_SESSIONS_PER_MONTH,
     alarm_date,
     false_alarm_months,
     lead_months,
@@ -60,9 +61,30 @@ def test_lead_months_is_none_when_there_was_no_alarm():
     assert lead_months(None, pd.Timestamp("2023-01-01")) is None
 
 
-def test_false_alarm_months_counts_control_names_in_the_riskiest_bucket():
+def test_false_alarm_months_counts_only_the_named_controls():
     scores = _scores()
     flags = raw_flags(scores)
-    # SAFE2, SAFE3, SAFE4 sit in the top three for the first 30 rows.
+    # Pinned rather than asserted positive: `months > 0` would still pass if the
+    # function summed every column, used the wrong persistence window, or divided by
+    # the wrong constant.
+    expected_sessions = sum(
+        int((flags[t].astype(float).rolling(PERSISTENCE_DAYS).sum() >= PERSISTENCE_DAYS).sum())
+        for t in ("SAFE2", "SAFE3", "SAFE4")
+    )
     months = false_alarm_months(flags, controls=["SAFE2", "SAFE3", "SAFE4"])
-    assert months > 0
+    assert months == pytest.approx(expected_sessions / TRADING_SESSIONS_PER_MONTH)
+
+
+def test_false_alarm_months_excludes_names_not_listed_as_controls():
+    scores = _scores()
+    flags = raw_flags(scores)
+    two = false_alarm_months(flags, controls=["SAFE3", "SAFE4"])
+    three = false_alarm_months(flags, controls=["SAFE2", "SAFE3", "SAFE4"])
+    assert three > two
+
+
+def test_false_alarm_months_refuses_a_control_with_no_column():
+    flags = raw_flags(_scores())
+    with pytest.raises(KeyError) as excinfo:
+        false_alarm_months(flags, controls=["SAFE2", "NOPE.XX"])
+    assert "NOPE.XX" in str(excinfo.value)

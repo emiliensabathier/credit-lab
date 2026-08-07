@@ -19,6 +19,7 @@ N_RISKIEST = 3
 PERSISTENCE_DAYS = 20
 MIN_OBSERVATIONS_BEFORE_EVENT = 60
 DAYS_PER_MONTH = 30.44
+TRADING_SESSIONS_PER_MONTH = 252 / 12
 
 
 def raw_flags(scores: pd.DataFrame, n_riskiest: int = N_RISKIEST) -> pd.DataFrame:
@@ -50,12 +51,19 @@ def false_alarm_months(
 
     A lead time only means something next to this number: a score that flags
     everyone all the time will always look fast.
+
+    Refuses rather than skipping when a requested control has no column. A control
+    legitimately has no column when the score refused to compute it for that name;
+    callers in that situation are expected to filter their control list themselves
+    and publish the refusal, so the omission stays visible instead of quietly
+    shrinking the denominator and flattering the score.
     """
+    missing = [ticker for ticker in controls if ticker not in flags.columns]
+    if missing:
+        raise KeyError(f"control names absent from the score frame: {', '.join(missing)}")
     total_sessions = 0
     for ticker in controls:
-        if ticker not in flags.columns:
-            continue
         column = flags[ticker].fillna(False).astype(float)
         held = column.rolling(persistence).sum() >= persistence
         total_sessions += int(held.sum())
-    return total_sessions / (252 / 12)
+    return total_sessions / TRADING_SESSIONS_PER_MONTH
