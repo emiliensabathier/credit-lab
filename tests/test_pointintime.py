@@ -45,14 +45,20 @@ def test_step_series_is_empty_before_the_first_publication():
 def test_no_value_changes_when_a_future_statement_is_injected():
     """The look-ahead padlock.
 
-    Adding FY2025 to the inputs must not move a single value dated before that
-    statement could have been published.
+    The injected fiscal end (2025-05-01) is deliberately chosen INSIDE the index
+    window (which runs to 2025-06-30): a naive implementation that indexes by
+    fiscal year end instead of publication date would surface 999.0 from
+    2025-05-01 onward, inside the window, and this test would catch it. Its
+    publication date (2025-05-01 + 90 days = 2025-07-30) falls OUTSIDE the
+    window, so the correct implementation must leave every value untouched. Do
+    not "tidy" this date back to something outside the window — that would
+    silently disarm the test, as happened with the original 2025-12-31 choice.
     """
     index = pd.date_range("2024-01-01", "2025-06-30", freq="D")
     baseline = step_series(_annual(), index)
 
     with_future = _annual().copy()
-    with_future[pd.Timestamp("2025-12-31")] = 999.0
+    with_future[pd.Timestamp("2025-05-01")] = 999.0
     perturbed = step_series(with_future, index)
 
     pd.testing.assert_series_equal(baseline, perturbed)
