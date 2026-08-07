@@ -105,7 +105,16 @@ def run(
             alarm = alarm_date(flags[company.ticker], persistence)
             lead_rows.setdefault(company.ticker, {})[name] = lead_months(alarm, target)
             if alarm is not None and alarm < target:
-                impact = measure(loaded[company.ticker].prices, alarm, target)
+                # `measure` refuses a truncated forward window or a zero price. That
+                # refusal costs one row, not the whole run: isolating it here is the
+                # same contract `build_scores` honours above, and without it a single
+                # event near the edge of the price history would lose all thirteen
+                # companies' results.
+                try:
+                    impact = measure(loaded[company.ticker].prices, alarm, target)
+                except CreditLabError as error:
+                    failures[f"impact:{name}:{company.ticker}"] = str(error)
+                    continue
                 impact_rows.append(
                     {
                         "ticker": company.ticker,
