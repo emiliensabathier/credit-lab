@@ -19,6 +19,8 @@ from dataclasses import dataclass
 
 import pandas as pd
 
+from clab.errors import InsufficientHistoryError
+
 
 @dataclass(frozen=True)
 class Impact:
@@ -31,6 +33,12 @@ def _at(prices: pd.Series, date: pd.Timestamp) -> float:
     return float(prices.asof(date))
 
 
+def _nonzero(value: float, label: str) -> float:
+    if value == 0:
+        raise InsufficientHistoryError(f"{label} price is zero; a relative change is undefined")
+    return value
+
+
 def measure(
     prices: pd.Series,
     alarm: pd.Timestamp,
@@ -38,18 +46,31 @@ def measure(
     lookback_days: int = 252,
     forward_days: int = 126,
 ) -> Impact:
-    prices = prices.sort_index()
-    at_alarm = _at(prices, alarm)
-    at_target = _at(prices, target)
+    """Three signed relative changes around one alarm and one event.
 
-    window = prices.loc[: pd.Timestamp(alarm)].tail(lookback_days)
-    peak = float(window.max()) if not window.empty else at_alarm
+    Short windows refuse rather than truncate. Reporting a partial forward window as a
+    full one would turn "we do not have six months of prices after this event" into
+    "the event cost nothing" -- the exact silent failure this package refuses, at the
+    one place where it would corrupt the number the project publishes.
+    """
+    prices = prices.sort_index()
+    at_alarm = _nonzero(_at(prices, alarm), "alarm")
+    at_target = _nonzero(_at(prices, target), "target")
+
+    window = prices.loc[: pd.Timestamp(alarm)]
+    if window.empty:
+        raise InsufficientHistoryError(f"no price at or before the alarm date {alarm.date()}")
+    peak = _nonzero(float(window.tail(lookback_days).max()), "lookback peak")
 
     forward = prices.loc[pd.Timestamp(target) :].head(forward_days + 1)
-    at_forward = float(forward.iloc[-1]) if not forward.empty else at_target
+    if len(forward) < forward_days + 1:
+        raise InsufficientHistoryError(
+            f"only {len(forward)} observations after the target date {target.date()}, "
+            f"{forward_days + 1} required; a truncated window would read as a smaller loss"
+        )
 
     return Impact(
         avoided=at_target / at_alarm - 1.0,
         already_suffered=at_alarm / peak - 1.0,
-        after_target=at_forward / at_target - 1.0,
+        after_target=float(forward.iloc[-1]) / at_target - 1.0,
     )
