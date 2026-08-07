@@ -22,7 +22,17 @@ def _slug(ticker: str) -> str:
 
 
 def _frame(name: str) -> pd.DataFrame:
-    return pd.read_csv(STATEMENTS / name, index_col=0, parse_dates=True)
+    frame = pd.read_csv(STATEMENTS / name, index_col=0, parse_dates=True)
+    # to_csv writes column labels as strings and read_csv's parse_dates only touches
+    # the index, so the fiscal year ends come back as plain strings. Restoring them
+    # keeps the fixture type-identical to a live pull instead of leaning on consumers
+    # to coerce defensively.
+    frame.columns = pd.to_datetime(frame.columns)
+    return frame
+
+
+def _prices(name: str) -> pd.Series:
+    return pd.read_csv(STATEMENTS / name, index_col=0, parse_dates=True)["Close"]
 
 
 def load() -> dict:
@@ -34,7 +44,7 @@ def load() -> dict:
             _frame(f"{slug}_balance.csv"),
             _frame(f"{slug}_income.csv"),
             _frame(f"{slug}_cashflow.csv"),
-            _frame(f"{slug}_prices.csv")["Close"],
+            _prices(f"{slug}_prices.csv"),
         )
     return {
         "loaded": loaded,

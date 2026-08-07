@@ -57,7 +57,15 @@ def main() -> None:
         "def _slug(ticker: str) -> str:\n"
         '    return ticker.replace(".", "_").replace("-", "_")\n\n\n'
         "def _frame(name: str) -> pd.DataFrame:\n"
-        "    return pd.read_csv(STATEMENTS / name, index_col=0, parse_dates=True)\n\n\n"
+        "    frame = pd.read_csv(STATEMENTS / name, index_col=0, parse_dates=True)\n"
+        "    # to_csv writes column labels as strings and read_csv's parse_dates only touches\n"
+        "    # the index, so the fiscal year ends come back as plain strings. Restoring them\n"
+        "    # keeps the fixture type-identical to a live pull instead of leaning on consumers\n"
+        "    # to coerce defensively.\n"
+        "    frame.columns = pd.to_datetime(frame.columns)\n"
+        "    return frame\n\n\n"
+        "def _prices(name: str) -> pd.Series:\n"
+        '    return pd.read_csv(STATEMENTS / name, index_col=0, parse_dates=True)["Close"]\n\n\n'
         "def load() -> dict:\n"
         "    loaded = {}\n"
         "    for company in UNIVERSE:\n"
@@ -67,7 +75,7 @@ def main() -> None:
         '            _frame(f"{slug}_balance.csv"),\n'
         '            _frame(f"{slug}_income.csv"),\n'
         '            _frame(f"{slug}_cashflow.csv"),\n'
-        '            _frame(f"{slug}_prices.csv")["Close"],\n'
+        '            _prices(f"{slug}_prices.csv"),\n'
         "        )\n"
         "    return {\n"
         '        "loaded": loaded,\n'
