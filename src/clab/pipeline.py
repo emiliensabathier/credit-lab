@@ -94,8 +94,20 @@ def run(
     lag_days: int = PUBLICATION_LAG_DAYS,
     n_riskiest: int = N_RISKIEST,
     persistence: int = PERSISTENCE_DAYS,
+    prebuilt: tuple[dict[str, pd.DataFrame], dict[str, str]] | None = None,
 ) -> Result:
-    scores, failures = build_scores(loaded, rates, deflator, fx, lag_days)
+    """Run the full comparison.
+
+    `prebuilt`, when given, is the `(scores, failures)` pair `build_scores` would
+    have returned for this `loaded`/`rates`/`deflator`/`fx`/`lag_days` combination --
+    passing it in skips rebuilding the score frames. The caller owns the consistency
+    of that pair: scores built under a different `lag_days` than the one requested
+    here would silently mislabel the result, since nothing downstream re-derives
+    `lag_days` from the scores themselves.
+    """
+    scores, failures = (
+        prebuilt if prebuilt is not None else build_scores(loaded, rates, deflator, fx, lag_days)
+    )
 
     control_tickers = [company.ticker for company in CONTROLS]
     lead_rows: dict[str, dict[str, float | None]] = {}
@@ -220,8 +232,17 @@ def robustness(
 ) -> pd.DataFrame:
     """Median lead per score under each convention.
 
+    Scores depend only on the publication lag; persistence and quartile width change
+    how they are ranked, not what they are. Building once per distinct lag turns six
+    full pipeline runs into three, which is the difference between a test suite that
+    runs and one that times out.
+
     A ranking that flips between variants is a null result, and reads as one.
     """
+    built = {
+        lag: build_scores(loaded, rates, deflator, fx, lag)
+        for lag in sorted({variant["lag_days"] for variant in VARIANTS})
+    }
     rows = []
     for variant in VARIANTS:
         result = run(
@@ -232,6 +253,7 @@ def robustness(
             lag_days=variant["lag_days"],
             n_riskiest=variant["n_riskiest"],
             persistence=variant["persistence"],
+            prebuilt=built[variant["lag_days"]],
         )
         row = {"variant": variant["label"]}
         row.update({name: result.leads[name].median() for name in SCORE_NAMES})

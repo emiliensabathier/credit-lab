@@ -1,16 +1,33 @@
 """Robustness, the secondary target, and the textbook thresholds kept as a control."""
 
 import pandas as pd
+import pytest
 
-from clab.pipeline import SCORE_NAMES, VARIANTS, robustness, run
+from clab.pipeline import SCORE_NAMES, VARIANTS, build_scores, robustness, run
 from clab.scores.thresholds import ALTMAN_DISTRESS, academic_flags
 from tests.conftest import synthetic_inputs
 
 
 def test_robustness_reports_one_row_per_variant():
     table = robustness(**synthetic_inputs())
-    assert len(table) == len(VARIANTS)
+    # Shape alone would pass on six rows of garbage; the labels are what tie each row
+    # to the convention it is supposed to represent.
+    assert list(table.index) == [variant["label"] for variant in VARIANTS]
     assert set(SCORE_NAMES).issubset(table.columns)
+
+
+def test_robustness_rows_are_the_medians_of_their_variant():
+    table = robustness(**synthetic_inputs())
+    headline = VARIANTS[0]
+    direct = run(
+        **synthetic_inputs(),
+        lag_days=headline["lag_days"],
+        n_riskiest=headline["n_riskiest"],
+        persistence=headline["persistence"],
+    )
+    for name in SCORE_NAMES:
+        expected, actual = direct.leads[name].median(), table.loc[headline["label"], name]
+        assert (pd.isna(expected) and pd.isna(actual)) or expected == pytest.approx(actual)
 
 
 def test_variants_cover_the_two_conventions_named_in_the_spec():
@@ -52,3 +69,27 @@ def test_a_name_without_enough_history_before_its_event_is_recorded():
     assert result.leads.loc["EMEIS.PA", "altman"] is None or pd.isna(
         result.leads.loc["EMEIS.PA", "altman"]
     )
+
+
+def test_the_guard_blanks_a_lead_it_has_declared_unmeasurable():
+    result = run(**synthetic_inputs())
+    # Emeis alone does not prove the guard works: its event predates every publication
+    # date, so `lead_months` already returns None by the ordinary path, and the Emeis
+    # assertion above would pass even with the blanking line deleted. Casino and Adler
+    # are the real test -- they DO produce a computed lead of roughly a month from only
+    # ~38 sessions of history, and the guard must blank it. Recording a refusal while
+    # still publishing the lead time is the failure mode this pins down.
+    assert any(key.endswith(":CO.PA") for key in result.insufficient)
+    assert any(key.endswith(":ADJ.DE") for key in result.insufficient)
+    for key in result.insufficient:
+        name, ticker = key.split(":")
+        assert pd.isna(result.leads.loc[ticker, name]), f"{key} recorded but still published"
+
+
+def test_prebuilt_scores_give_the_same_result_as_building_them():
+    inputs = synthetic_inputs()
+    plain = run(**inputs)
+    prebuilt = run(**inputs, prebuilt=build_scores(**inputs))
+    pd.testing.assert_frame_equal(plain.leads, prebuilt.leads)
+    assert plain.false_alarms == prebuilt.false_alarms
+    assert plain.common_sample == prebuilt.common_sample
