@@ -20,6 +20,10 @@ from clab.horserace import (
 def _scores() -> pd.DataFrame:
     index = pd.date_range("2023-01-02", periods=100, freq="B")
     frame = pd.DataFrame(index=index)
+    # Six always-populated names, one more than 2 * N_RISKIEST, so every date in this
+    # fixture clears the rankability floor and the tests below exercise the ranking
+    # rule itself rather than tripping the sparse-cross-section guard.
+    frame["SAFE0"] = -0.1
     frame["SAFE1"] = 0.0
     frame["SAFE2"] = 0.1
     frame["SAFE3"] = 0.2
@@ -88,3 +92,27 @@ def test_false_alarm_months_refuses_a_control_with_no_column():
     with pytest.raises(KeyError) as excinfo:
         false_alarm_months(flags, controls=["SAFE2", "NOPE.XX"])
     assert "NOPE.XX" in str(excinfo.value)
+
+
+def test_a_sparse_cross_section_flags_nobody():
+    index = pd.date_range("2023-01-02", periods=40, freq="B")
+    sparse = pd.DataFrame(index=index)
+    sparse["ONLY"] = 5.0
+    for filler in ("A", "B", "C", "D"):
+        sparse[filler] = float("nan")
+    # Five columns, one with data: ranking three of them would be a tautology, not a
+    # selection, so nothing may be flagged.
+    assert not raw_flags(sparse).to_numpy().any()
+
+
+def test_the_cross_section_becomes_rankable_once_enough_names_have_scores():
+    index = pd.date_range("2023-01-02", periods=40, freq="B")
+    frame = pd.DataFrame(index=index)
+    for position, name in enumerate(("A", "B", "C", "D", "E", "F")):
+        frame[name] = float(position)
+    frame.loc[frame.index[:20], ["E", "F"]] = float("nan")
+    flags = raw_flags(frame)
+    # First twenty sessions: four names with scores, below 2 * N_RISKIEST -> no flags.
+    assert not flags.iloc[:20].to_numpy().any()
+    # After that all six carry scores, so the three riskiest are flagged.
+    assert flags.iloc[20:].sum(axis=1).unique().tolist() == [3]

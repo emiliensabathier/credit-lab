@@ -23,9 +23,20 @@ TRADING_SESSIONS_PER_MONTH = 252 / 12
 
 
 def raw_flags(scores: pd.DataFrame, n_riskiest: int = N_RISKIEST) -> pd.DataFrame:
-    """True where a name is among the `n_riskiest` on that date."""
+    """True where a name is among the `n_riskiest` on that date.
+
+    A date only counts once at least `2 * n_riskiest` names carry a score, so the
+    flagged set is never more than half the ranked cross-section. Below that the rule
+    stops selecting and starts describing whoever happens to have data: in the first
+    quarter of 2023 exactly one company in the universe has a published score --
+    Siemens, whose fiscal year ends in September and who therefore reports before
+    anyone else -- and "the three riskiest of thirteen" would flag it for want of a
+    rival. That is not a hypothetical: it produced 2.24 months of identical false
+    alarms across all three scores, every one of them an artefact of coverage.
+    """
     ranks = scores.rank(axis=1, ascending=False, method="first")
-    return ranks.le(n_riskiest) & scores.notna()
+    rankable = scores.notna().sum(axis=1) >= 2 * n_riskiest
+    return ranks.le(n_riskiest) & scores.notna() & rankable.to_numpy()[:, None]
 
 
 def alarm_date(flags: pd.Series, persistence: int = PERSISTENCE_DAYS) -> pd.Timestamp | None:
