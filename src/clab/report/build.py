@@ -81,7 +81,7 @@ def render(result: Result, robustness: pd.DataFrame | None = None) -> str:
         "<h2>Lead time, in months</h2>",
         _table(result.leads),
         f"<p class='note'>Common sub-sample: {', '.join(result.common_sample)}.</p>",
-        lead_chart(result.leads.fillna(0.0)),
+        lead_chart(result.leads),
         "<h2>False alarms, in control-name months</h2>",
         _table(pd.DataFrame(result.false_alarms, index=["months"]).T),
         "<p class='note'>A lead time only means something next to this number. Aroundtown "

@@ -5,6 +5,7 @@ from __future__ import annotations
 import io
 
 import matplotlib
+import numpy as np
 
 matplotlib.use("Agg")
 # Two renders of the same figure are not byte-identical by default: the SVG backend
@@ -29,7 +30,7 @@ def _svg(figure: plt.Figure) -> str:
     return markup[markup.index("<svg") :]
 
 
-def score_paths_chart(scores: pd.DataFrame, ticker: str, target: pd.Timestamp) -> str:
+def score_paths_chart(scores: dict[str, pd.DataFrame], ticker: str, target: pd.Timestamp) -> str:
     figure, axis = plt.subplots(figsize=(8, 3))
     for name, frame in scores.items():
         if ticker in frame.columns:
@@ -48,8 +49,26 @@ def score_paths_chart(scores: pd.DataFrame, ticker: str, target: pd.Timestamp) -
 
 
 def lead_chart(leads: pd.DataFrame) -> str:
+    """Grouped bars, one group per company, one bar per score.
+
+    `DataFrame.plot(kind="bar")` fills missing cells with 0 before drawing, which is
+    wrong here: a company a score never flagged is not the same as one it flagged
+    with zero months to spare, and drawing both as a bar of the same height flatters
+    the "no lead" result into looking like a real, if small, one. Bars are placed by
+    hand instead, straight from the (possibly `NaN`, possibly Python `None`) values,
+    so a missing lead draws no bar at all rather than a zero-height one.
+    """
     figure, axis = plt.subplots(figsize=(8, 3.5))
-    leads.plot(kind="bar", ax=axis, width=0.8)
+    companies = list(leads.index)
+    scores = list(leads.columns)
+    positions = np.arange(len(companies))
+    width = 0.8 / max(len(scores), 1)
+    for i, name in enumerate(scores):
+        offset = (i - (len(scores) - 1) / 2) * width
+        heights = leads[name].to_numpy(dtype=float)
+        axis.bar(positions + offset, heights, width=width, label=name)
+    axis.set_xticks(positions)
+    axis.set_xticklabels(companies)
     axis.set_ylabel("months of lead")
     axis.axhline(0, color="#16181d", linewidth=0.8)
     axis.legend(fontsize=8, frameon=False)
