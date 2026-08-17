@@ -3,6 +3,13 @@ name: ci
 on:
   push:
     branches: [main]
+    # This suite replays the frozen pipeline four times over and takes the better part of
+    # half an hour. A README edit cannot change a published figure -- the report identity
+    # test reads reports/ and src/, never the docs -- so a docs push does not pay for a
+    # full replay. Pull requests stay unconditional.
+    paths-ignore:
+      - "**.md"
+      - LICENSE
   pull_request:
 
 jobs:
