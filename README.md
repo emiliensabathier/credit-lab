@@ -112,9 +112,19 @@ conventions is a null result, and this one reads as a null result.**
 
 The committed `reports/horserace.html` is rendered from a frozen fixture by
 `scripts/build_frozen_report.py`, and a test asserts the committed page and the freshly
-rendered one are identical outside the chart images. Every figure above is pinned in
-`tests/test_regression.py`: when one changes, either the model changed or the fixture was
-re-captured, and both are deliberate acts that have to be re-stated in that file.
+rendered one are identical outside the chart images.
+
+Every figure above is pinned, by one of two routes, and the difference is worth stating
+rather than blurring:
+
+- the lead times, the false-alarm counts and the common sub-sample are written out as
+  literals in `tests/test_regression.py` and compared value by value;
+- the impact and robustness tables are pinned by the report-identity test instead. They are
+  not restated as literals anywhere, so they are protected only in the sense that changing
+  them changes the rendered page, which then stops matching the committed one.
+
+Either way a changed number fails the suite, and either way the cause is one of two
+deliberate acts: the model changed, or the fixture was re-captured.
 
 ```bash
 python -m pip install -e ".[dev]"
