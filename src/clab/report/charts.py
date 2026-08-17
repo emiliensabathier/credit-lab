@@ -48,8 +48,12 @@ def score_paths_chart(scores: dict[str, pd.DataFrame], ticker: str, target: pd.T
     return _svg(figure)
 
 
-def lead_chart(leads: pd.DataFrame) -> str:
+def lead_figure(leads: pd.DataFrame) -> plt.Figure:
     """Grouped bars, one group per company, one bar per score.
+
+    Returned as a figure rather than as markup, because the README needs the same chart as
+    a raster: GitHub shows a committed HTML report as source, so the one picture that
+    carries the result has to travel separately.
 
     `DataFrame.plot(kind="bar")` fills missing cells with 0 before drawing, which is
     wrong here: a company a score never flagged is not the same as one it flagged
@@ -72,4 +76,9 @@ def lead_chart(leads: pd.DataFrame) -> str:
     axis.set_ylabel("months of lead")
     axis.axhline(0, color="#16181d", linewidth=0.8)
     axis.legend(fontsize=8, frameon=False)
-    return _svg(figure)
+    return figure
+
+
+def lead_chart(leads: pd.DataFrame) -> str:
+    """The lead chart as inline SVG, for the report."""
+    return _svg(lead_figure(leads))

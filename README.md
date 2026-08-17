@@ -26,6 +26,12 @@ fiscal year end.
 
 **False alarms, in control-name months: 0.00 for all three scores.**
 
+![Months of lead time per company and per score; three of the six companies have no bar at all](docs/lead-times.png)
+
+A bar is a warning that arrived in time. Three of the six companies have none, under any
+score, and a missing bar is drawn as missing rather than as zero — a score that never
+flagged a name is not the same as one that flagged it with no months to spare.
+
 Full report with per-company charts, the event sources and the robustness grid:
 [`reports/horserace.html`](reports/horserace.html).
 
@@ -167,6 +173,15 @@ Stated because they matter more than the tables.
 - **Merton is estimated from equity, not from debt prices.** Distance-to-default here is the
   standard structural inversion of equity value and volatility; it inherits every assumption
   in that, including a single debt point and lognormal asset dynamics.
+
+## Related
+
+Three companion studies, same method: a frozen capture, a rendered report, and a
+limitations section longer than the results.
+
+- [rates-lab](https://github.com/emiliensabathier/rates-lab) — what the yield curve prices: policy path, inflation, term premium
+- [valuation-lab](https://github.com/emiliensabathier/valuation-lab) — what a share price already assumes, by inverting a DCF
+- [portfolio-lab](https://github.com/emiliensabathier/portfolio-lab) — whether any allocation rule beats a static 60/40
 
 ## Licence
 
