@@ -13,8 +13,16 @@ import numpy as np
 import pandas as pd
 
 from clab.events import hard_event
-from clab.horserace import N_RISKIEST, PERSISTENCE_DAYS
-from clab.pipeline import Result
+from clab.horserace import (
+    CENSORED,
+    MEASURED,
+    MIN_OBSERVATIONS_BEFORE_EVENT,
+    MISSED,
+    N_RISKIEST,
+    PERSISTENCE_DAYS,
+    UNTESTABLE,
+)
+from clab.pipeline import NO_SCORE, Result
 from clab.pointintime import PUBLICATION_LAG_DAYS
 from clab.report.charts import lead_chart, score_paths_chart
 from clab.universe import STRESSED
@@ -36,35 +44,55 @@ svg { max-width: 100%; height: auto; }
 """
 
 CAVEAT = (
-    "Six events are not a statistic, and only the common sub-sample carries all three "
-    "scores. This page measures a handful of histories; it does not test a hypothesis."
+    "Six events are not a statistic, and only part of them can be tested at all: the "
+    "data source carries about four years of annual accounts, so an event that arrives "
+    "before the cross-section has enough ranked history is untestable, not missed. "
+    "This page measures a handful of histories; it does not test a hypothesis."
 )
 
+STATUS_LABELS = {
+    MISSED: "not in time",
+    UNTESTABLE: "untestable",
+    NO_SCORE: "no score",
+}
 
-def _table(frame: pd.DataFrame) -> str:
-    # `Result.leads` and `Result.secondary` build each ticker's row as a plain Python
-    # dict that may hold a mix of floats and explicit `None` (see pipeline.py). When
-    # every value in one of those per-ticker columns is `None` -- Casino, Emeis and
-    # Adler here, flagged by no score -- pandas keeps that column as `object` dtype
-    # rather than upcasting to `float64`, and `to_html`'s `na_rep` silently skips
-    # `None` cells on an object column: they render as the literal string "None"
-    # instead of the same "not in time" a `NaN` cell gets. `fillna(np.nan)` forces
-    # every missing cell to the same NaN representation before formatting, regardless
-    # of the column's dtype, so the two constructions of "no measurable lead" don't
-    # read as two different things on the page.
-    #
-    # `Result.impacts` carries genuine timestamp columns (`alarm`, `target`,
-    # `fallen_angel`), and `to_html`'s `na_rep` does not reach a missing entry in a
-    # datetime64 column either: it renders as the literal "NaT", a third spelling of
-    # the same "not applicable" that `fillna` alone cannot fix, since NaT is its own
-    # sentinel rather than a NaN. Formatting those columns to plain date strings first
+
+def _table(frame: pd.DataFrame, na_rep: str = "n/a", index: bool = True) -> str:
+    # `Result.impacts` carries genuine timestamp columns (`alarm`, `target`), and
+    # `to_html`'s `na_rep` does not reach a missing entry in a datetime64 column: it
+    # renders as the literal "NaT". Formatting those columns to plain date strings first
     # turns a missing entry into an ordinary NaN, so the same `na_rep` catches it.
+    # `fillna(np.nan)` likewise folds a stray `None` in an object column into NaN, which
+    # `to_html` would otherwise print as the string "None".
     frame = frame.copy()
     for column in frame.columns:
         if pd.api.types.is_datetime64_any_dtype(frame[column]):
             frame[column] = frame[column].dt.strftime("%Y-%m-%d")
     return frame.fillna(np.nan).to_html(
-        border=0, float_format=lambda value: f"{value:,.2f}", na_rep="not in time"
+        border=0, float_format=lambda value: f"{value:,.2f}", na_rep=na_rep, index=index
+    )
+
+
+def lead_cell(months: float | None, status: str) -> str:
+    """One lead-table cell, spelling out which of the four outcomes it is.
+
+    A censored lead is printed as a lower bound, because that is all it is: the
+    alarm fired on the first date the data allowed any alarm at all.
+    """
+    if status == MEASURED:
+        return f"{months:.2f}"
+    if status == CENSORED:
+        return f"\u2265 {months:.2f}"
+    return STATUS_LABELS[status]
+
+
+def lead_display(leads: pd.DataFrame, status: pd.DataFrame) -> pd.DataFrame:
+    return pd.DataFrame(
+        {
+            name: [lead_cell(leads.loc[t, name], status.loc[t, name]) for t in leads.index]
+            for name in leads.columns
+        },
+        index=leads.index,
     )
 
 
@@ -79,30 +107,54 @@ def render(result: Result, robustness: pd.DataFrame | None = None) -> str:
         f"{PUBLICATION_LAG_DAYS} days after fiscal year end.</p>",
         f"<div class='caveat'>{html_escape.escape(CAVEAT)}</div>",
         "<h2>Lead time, in months</h2>",
-        _table(result.leads),
-        f"<p class='note'>Common sub-sample: {', '.join(result.common_sample)}.</p>",
-        lead_chart(result.leads),
+        _table(lead_display(result.leads, result.status)),
+        "<p class='note'><em>untestable</em>: fewer than "
+        f"{MIN_OBSERVATIONS_BEFORE_EVENT} sessions before the event on which the name was "
+        "scored inside a rankable cross-section, so the score never had a fair chance. "
+        "<em>not in time</em>: testable, and no alarm before the event. "
+        "<em>&ge;</em>: the alarm fired on the first date any alarm was possible, so the "
+        "lead is a lower bound, not a measurement. <em>no score</em>: the score refused "
+        "the name (see Refusals).</p>",
+        "<p class='note'>Common sub-sample, testable under all three scores: "
+        f"{', '.join(result.common_sample) or 'none'}.</p>",
+        lead_chart(result.leads, result.status),
         "<h2>False alarms, in control-name months</h2>",
-        _table(pd.DataFrame(result.false_alarms, index=["months"]).T),
-        "<p class='note'>A lead time only means something next to this number. Aroundtown "
+        _table(
+            pd.DataFrame(
+                {"months": result.false_alarms, "forced by the rule": result.forced_false_alarms}
+            )
+        ),
+        "<p class='note'>Counted from the first rankable date to the last credit event. "
+        "Defaulted names leave the ranking, so once fewer than "
+        f"{N_RISKIEST} stressed names are alive the remaining slots go to controls whatever "
+        "the score says: <em>forced by the rule</em> is that arithmetic floor, before the "
+        "persistence filter (a forced slot that rotates between controls never persists, so "
+        "a count can sit below it). Only a count above the floor says something about the "
+        "score. A lead time only means something next to this number. Aroundtown "
         "sits in this group deliberately: it suffered the same property crunch as SBB and "
         "Adler, never fell below BBB-, and never entered a proceeding.</p>",
         "<h2>What the lead was worth</h2>",
-        _table(result.impacts),
+        _table(result.impacts, index=False),
         "<p class='note'>Read <em>avoided</em> next to <em>already_suffered</em>: a score "
-        "that only fires once the shares have halved shows a long lead and no value.</p>",
+        "that only fires once the shares have halved shows a long lead and no value. On a "
+        "<em>censored</em> row the alarm date is the first date any alarm was possible, so "
+        "<em>already_suffered</em> measures the fall before the test could start, not the "
+        "cost of a late warning.</p>",
         "<h2>Cross-check against the fallen-angel target</h2>",
-        _table(result.secondary),
+        _table(lead_display(result.secondary, result.secondary_status)),
         "<p class='note'>Only Atos and SBB ever fell below BBB-. Casino and Adler were "
         "already speculative grade before the window, Emeis has no public S&amp;P rating, "
-        "and Intrum was already rated below BBB-. Two observations are a cross-check, not "
-        "a statistic, and they are never averaged into the table above.</p>",
+        "and Intrum was already rated below BBB-. Both downgrades (2022-07-13 and "
+        "2023-05-08) come before the cross-section has enough ranked history, so the "
+        "cross-check is untestable on this data rather than failed. Kept on the page so "
+        "the gap stays visible.</p>",
         "<h2>Robustness</h2>",
         _table(robustness) if robustness is not None else "<p class='note'>not computed</p>",
-        "<p class='note'>Median lead per score under each convention: publication lag at "
-        "60, 90 and 120 days; persistence at 10, 20 and 40 sessions; the riskiest three "
-        "against the riskiest four. A ranking that flips between variants is a null "
-        "result and reads as one.</p>",
+        "<p class='note'>Per score and convention: events testable, alarms in time, "
+        "of which censored, and the median of the measured (uncensored) leads only. "
+        "Publication lag at 60, 90 and 120 days; persistence at 10, 20 and 40 sessions; "
+        "the riskiest three against the riskiest four. A median over one or two leads is "
+        "a description, not an estimate.</p>",
     ]
 
     parts.append("<h2>Per company</h2>")
@@ -115,7 +167,7 @@ def render(result: Result, robustness: pd.DataFrame | None = None) -> str:
         )
         parts.append(score_paths_chart(result.scores, company.ticker, event.date))
 
-    refusals = {**result.failures, **result.insufficient}
+    refusals = {**result.failures, **result.untestable}
     if refusals:
         parts.append("<h2>Refusals</h2>")
         parts.append(

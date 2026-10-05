@@ -20,6 +20,8 @@ matplotlib.rcParams["svg.hashsalt"] = "clab-report"
 import matplotlib.pyplot as plt  # noqa: E402
 import pandas as pd  # noqa: E402
 
+from clab.horserace import CENSORED, UNTESTABLE  # noqa: E402
+
 
 def _svg(figure: plt.Figure) -> str:
     """Serialise to SVG and drop the XML preamble, so the markup can be inlined."""
@@ -48,7 +50,7 @@ def score_paths_chart(scores: dict[str, pd.DataFrame], ticker: str, target: pd.T
     return _svg(figure)
 
 
-def lead_figure(leads: pd.DataFrame) -> plt.Figure:
+def lead_figure(leads: pd.DataFrame, status: pd.DataFrame) -> plt.Figure:
     """Grouped bars, one group per company, one bar per score.
 
     Returned as a figure rather than as markup, because the README needs the same chart as
@@ -57,10 +59,10 @@ def lead_figure(leads: pd.DataFrame) -> plt.Figure:
 
     `DataFrame.plot(kind="bar")` fills missing cells with 0 before drawing, which is
     wrong here: a company a score never flagged is not the same as one it flagged
-    with zero months to spare, and drawing both as a bar of the same height flatters
-    the "no lead" result into looking like a real, if small, one. Bars are placed by
-    hand instead, straight from the (possibly `NaN`, possibly Python `None`) values,
-    so a missing lead draws no bar at all rather than a zero-height one.
+    with zero months to spare. Bars are placed by hand instead, so a missing lead draws
+    no bar at all. A censored lead -- the alarm fired on the first date the data
+    allowed -- is hatched, because its height is a lower bound; and a company no score
+    could be tested on says so under its name instead of looking like a miss.
     """
     figure, axis = plt.subplots(figsize=(8, 3.5))
     companies = list(leads.index)
@@ -70,15 +72,24 @@ def lead_figure(leads: pd.DataFrame) -> plt.Figure:
     for i, name in enumerate(scores):
         offset = (i - (len(scores) - 1) / 2) * width
         heights = leads[name].to_numpy(dtype=float)
-        axis.bar(positions + offset, heights, width=width, label=name)
+        censored = (status[name] == CENSORED).to_numpy()
+        bars = axis.bar(positions + offset, heights, width=width, label=name)
+        for bar, is_censored in zip(bars, censored, strict=True):
+            if is_censored:
+                bar.set_hatch("///")
+                bar.set_edgecolor("white")
+    labels = [
+        f"{ticker}\n(untestable)" if (status.loc[ticker] == UNTESTABLE).all() else ticker
+        for ticker in companies
+    ]
     axis.set_xticks(positions)
-    axis.set_xticklabels(companies)
+    axis.set_xticklabels(labels, fontsize=8)
     axis.set_ylabel("months of lead")
     axis.axhline(0, color="#16181d", linewidth=0.8)
-    axis.legend(fontsize=8, frameon=False)
+    axis.legend(fontsize=8, frameon=False, title="hatched: lower bound", title_fontsize=7)
     return figure
 
 
-def lead_chart(leads: pd.DataFrame) -> str:
+def lead_chart(leads: pd.DataFrame, status: pd.DataFrame) -> str:
     """The lead chart as inline SVG, for the report."""
-    return _svg(lead_figure(leads))
+    return _svg(lead_figure(leads, status))

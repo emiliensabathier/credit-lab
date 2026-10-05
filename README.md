@@ -9,45 +9,66 @@ published on the same page.
 ## Results
 
 Thirteen issuers: six that entered a court-supervised restructuring between 2022 and 2024,
-seven that did not. A name is flagged when it sits among the three riskiest of the thirteen
-and stays there for twenty sessions. Statements are treated as public ninety days after
-fiscal year end.
+seven that did not. A name is flagged when it sits among the three riskiest of the names
+still alive and stays there for twenty sessions; a name leaves the ranking on its default
+date. Statements are treated as public ninety days after fiscal year end.
 
 **Lead time before the credit event, in months:**
 
 | | Altman | Ohlson | Merton |
 | --- | --- | --- | --- |
-| Atos | not in time | not in time | **10.81** |
-| Casino Guichard | not in time | not in time | not in time |
-| Emeis | not in time | not in time | not in time |
-| Samhallsbyggnadsbolaget | **2.14** | not in time | **13.04** |
-| Adler Group | not in time | not in time | not in time |
-| Intrum | **18.50** | **18.50** | not in time |
+| Atos | **10.55** | ≥ 10.81 | ≥ 10.81 |
+| Casino Guichard | no score | untestable | untestable |
+| Emeis | untestable | untestable | untestable |
+| Samhallsbyggnadsbolaget | ≥ 14.06 | **12.39** | ≥ 14.06 |
+| Adler Group | untestable | untestable | untestable |
+| Intrum | ≥ 18.50 | ≥ 18.50 | **7.13** |
 
-**False alarms, in control-name months: 0.00 for all three scores.**
+- **untestable**: fewer than sixty sessions before the event on which the name carried a
+  score inside a rankable cross-section. The score never had a chance to flag it, so this is
+  a statement about the data, not about the score.
+- **≥**: the alarm fired on the first date any alarm was possible (2023-05-02, the twentieth
+  session after the cross-section became rankable). The true lead is at least this long and
+  could be much longer; the number is a lower bound, not a measurement.
+- **bold**: a measured lead — the alarm fired later than the first possible date.
+- **no score**: Altman refuses Casino, whose filings do not report retained earnings.
 
-![Months of lead time per company and per score; three of the six companies have no bar at all](docs/lead-times.png)
+**False alarms, in control-name months, counted up to the last credit event:**
 
-A bar is a warning that arrived in time. Three of the six companies have none, under any
-score, and a missing bar is drawn as missing rather than as zero — a score that never
-flagged a name is not the same as one that flagged it with no months to spare.
+| | Altman | Ohlson | Merton |
+| --- | --- | --- | --- |
+| false alarms | 10.67 | 10.52 | 21.05 |
+| forced by the rule | 12.48 | 12.48 | 12.48 |
+
+![Months of lead time per company and per score; hatched bars are lower bounds, and three companies are untestable](docs/lead-times.png)
 
 Full report with per-company charts, the event sources and the robustness grid:
 [`reports/horserace.html`](reports/horserace.html).
 
 ## What this actually shows
 
-Read the two tables together, because separately each one flatters the scores.
+Half the sample cannot be tested. The data source (Yahoo Finance via `yfinance`) carries
+about four years of annual accounts: FY2022 onwards, with FY2021 all but empty. Under the
+ninety-day lag the first usable statements are public on 2023-03-31, and the cross-section
+becomes rankable that day. Emeis defaulted in April 2022 and Adler in April 2023, before or
+days after that; Casino's May 2023 conciliation leaves 37 ranked sessions. None of the three
+was missed by any score — none of the three could have been flagged by any score.
 
-No score flags more than two of the five names in the common sub-sample. Three of the six
-stressed issuers — Casino, Emeis, Adler — are caught by nothing at all, in time, under any
-score. The headline is a row of blanks, and the blanks are the finding.
+On the three names that can be tested — Atos, SBB, Intrum — every score flags every name in
+time, under every convention in the robustness grid. That sounds strong and is mostly
+structural: from Casino's default to Atos', exactly three stressed names are alive for three
+slots, so any score that ranks them above the seven controls flags all three. Six
+of the nine leads are censored at the first possible date; the three measured ones (10.55,
+12.39, 7.13 months) are one per score, one per company, and rank nothing.
 
-The zero false-alarm count is real and it is also uninformative here. No control name ever
-enters the riskiest three over the window where the cross-section is rankable, under any
-score. That reads as clean separation, and it also means the false-alarm counter cannot
-discriminate between the three scores on this sample. Both halves of that sentence are true
-and the second one is the one usually left out.
+The false-alarm count is where the scores do differ. Once a stressed name defaults, fewer
+than three are left and the rule hands the empty slots to controls whatever the score says:
+12.48 control-months over the window are forced by arithmetic alone. Altman and Ohlson stay
+at or below that floor (a forced slot that rotates between controls never persists twenty
+sessions, which is how a count sits below it). Merton exceeds it by 8.57 months: it ranked
+controls above live stressed names — Intrum chiefly, which Merton only flagged in April
+2024. That is the one discriminating figure on this sample, and it is one score's behaviour
+on a handful of names, not a test.
 
 ## What the lead was worth
 
@@ -56,39 +77,48 @@ the alarm to the event: negative means the price fell after the alarm, which is 
 warning was worth. `already_suffered` is the fall from the prior twelve-month peak down to
 the alarm, which is what the warning had already cost by the time it arrived.
 
-| Ticker | Score | Alarm | Event | avoided | already_suffered | after_target |
-| --- | --- | --- | --- | --- | --- | --- |
-| SBB-B.ST | Altman | 2024-04-29 | 2024-07-03 | **+0.91** | -0.55 | -0.21 |
-| INTRUM.ST | Altman | 2023-05-02 | 2024-11-15 | -0.62 | -0.63 | +0.18 |
-| INTRUM.ST | Ohlson | 2023-05-02 | 2024-11-15 | -0.62 | -0.63 | +0.18 |
-| ATO.PA | Merton | 2023-05-02 | 2024-03-26 | -0.86 | -0.53 | -0.61 |
-| SBB-B.ST | Merton | 2023-06-02 | 2024-07-03 | **+0.40** | -0.70 | -0.21 |
+| Ticker | Score | Alarm | Event | Lead | Censored | avoided | already_suffered | after_target |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| ATO.PA | Altman | 2023-05-10 | 2024-03-26 | 10.55 | no | -0.86 | -0.53 | -0.61 |
+| SBB-B.ST | Altman | 2023-05-02 | 2024-07-03 | 14.06 | yes | -0.14 | -0.57 | -0.21 |
+| INTRUM.ST | Altman | 2023-05-02 | 2024-11-15 | 18.50 | yes | -0.62 | -0.63 | +0.18 |
+| ATO.PA | Ohlson | 2023-05-02 | 2024-03-26 | 10.81 | yes | -0.86 | -0.53 | -0.61 |
+| SBB-B.ST | Ohlson | 2023-06-22 | 2024-07-03 | 12.39 | no | **+1.24** | -0.81 | -0.21 |
+| INTRUM.ST | Ohlson | 2023-05-02 | 2024-11-15 | 18.50 | yes | -0.62 | -0.63 | +0.18 |
+| ATO.PA | Merton | 2023-05-02 | 2024-03-26 | 10.81 | yes | -0.86 | -0.53 | -0.61 |
+| SBB-B.ST | Merton | 2023-05-02 | 2024-07-03 | 14.06 | yes | -0.14 | -0.57 | -0.21 |
+| INTRUM.ST | Merton | 2024-04-12 | 2024-11-15 | 7.13 | no | **+0.34** | -0.79 | +0.18 |
 
-Two of the five alarms were followed by the share price *rising* — 91% and 40%. Those are
-not leads, they are warnings that fired at the bottom. Of the three that did precede a fall,
-every one arrived after the name had already lost between 53% and 70% from its peak. Intrum's
-eighteen-month lead, the longest in the whole study, arrived with the stock already down 63%.
+Of the three measured alarms, only Altman on Atos preceded a fall (86%), and it arrived with
+the stock already down 53% from its peak. Ohlson on SBB and Merton on Intrum fired at the
+bottom: the shares then *rose* 124% and 34% to the event, after falls of 81% and 79%. Every
+alarm that did precede a fall arrived with the name already down between 53% and 63%. On the
+six censored rows the alarm date is the first date the test could start, so their
+`already_suffered` is the fall that happened before the data allowed any alarm — not
+evidence that the score was late, but no evidence that it was early either.
 
 This is the column that turns "which score flags first" into "was any of it worth anything",
-and on this sample the answer is: barely, and never early.
+and on this sample the answer is: barely, and never demonstrably early.
 
 ## Robustness
 
-Median lead per score, in months, under each convention:
+Under every convention all three scores have the same three testable names and flag all
+three in time. What varies is how many leads are censored and the measured lead that is
+left — a single lead per cell, so the "median" is one observation:
 
 | Variant | Altman | Ohlson | Merton |
 | --- | --- | --- | --- |
-| headline | 10.32 | 18.50 | 11.93 |
-| lag 60 | 11.43 | 19.65 | 13.09 |
-| lag 120 | 9.41 | 17.61 | 13.04 |
-| persistence 10 | 10.79 | 18.99 | 12.40 |
-| persistence 40 | 9.38 | 17.58 | 12.12 |
-| tercile | 16.28 | 10.81 | 12.43 |
+| headline | 10.55 (2 of 3 censored) | 12.39 (2 of 3) | 7.13 (2 of 3) |
+| lag 60 | 10.55 (2 of 3) | 12.39 (2 of 3) | 7.19 (2 of 3) |
+| lag 120 | — (3 of 3) | 12.39 (2 of 3) | 7.13 (2 of 3) |
+| persistence 10 | 11.04 (2 of 3) | 12.84 (2 of 3) | 7.65 (2 of 3) |
+| persistence 40 | 9.63 (2 of 3) | 11.47 (2 of 3) | 6.11 (2 of 3) |
+| tercile | — (3 of 3) | 13.80 (2 of 3) | 16.82 (2 of 3) |
 
 Publication lag at 60, 90 and 120 days; persistence at 10, 20 and 40 sessions; the riskiest
-three against the riskiest four. The last row reverses the ranking: Ohlson leads under every
-convention except one, where it comes last. **A ranking that flips between arbitrary
-conventions is a null result, and this one reads as a null result.**
+three against the riskiest four. Censored leads are excluded from the median rather than
+pooled with measurements. **No convention produces a ranking of the scores by lead time that
+means anything, and this reads as a null result.**
 
 ## Method
 
@@ -113,6 +143,13 @@ conventions is a null result, and this one reads as a null result.**
 - **The cross-section must be rankable before anything is flagged.** A date only counts once
   at least twice as many names carry a score as the number being flagged. Below that the rule
   stops selecting and starts describing whoever happens to have data.
+- **Defaulted names leave the ranking.** A name already in default is not a forecast target;
+  left in, it holds one of the riskiest slots for the rest of the window, delaying real alarms
+  and hiding false ones. False alarms are counted only up to the last credit event, because
+  after it the rule can only rank controls against each other.
+- **Untestable is not missed, and a censored lead is not a measurement.** Each (score, event)
+  pair is classified in `horserace.classify_lead` as measured, censored, missed or untestable,
+  and the tables print the class rather than folding three of them into one blank.
 
 ## Reproducing the figures
 
@@ -123,8 +160,9 @@ rendered one are identical outside the chart images.
 Every figure above is pinned, by one of two routes, and the difference is worth stating
 rather than blurring:
 
-- the lead times, the false-alarm counts and the common sub-sample are written out as
-  literals in `tests/test_regression.py` and compared value by value;
+- the lead times with their status (measured, censored, missed, untestable, no score), the
+  false-alarm counts, the forced floor and the common sub-sample are written out as literals
+  in `tests/test_regression.py` and compared value by value;
 - the impact and robustness tables are pinned by the report-identity test instead. They are
   not restated as literals anywhere, so they are protected only in the sense that changing
   them changes the rendered page, which then stops matching the committed one.
@@ -143,18 +181,31 @@ A live run never overwrites the committed report. It writes `horserace.local.htm
 overwriting the committed page would silently break the identity test that makes it
 trustworthy.
 
-**The suite takes fifteen to twenty-five minutes.** Four files — `test_pipeline`,
-`test_regression`, `test_report`, `test_robustness` — replay the whole frozen pipeline, and
-the robustness grid alone runs it six times over. The other sixty-one tests finish in under
-six seconds.
+**The full suite is slow.** Four files — `test_pipeline`, `test_regression`, `test_report`,
+`test_robustness` — replay the whole pipeline on the frozen or synthetic fixture, about a
+minute and a half per replay on a laptop, and the robustness grid alone runs it six times
+over; expect well over half an hour. The other sixty-nine tests (nine files) ran in 3.7
+seconds on the same machine.
 
 ## Limitations
 
 Stated because they matter more than the tables.
 
-- **Six events are not a statistic.** Only five carry all three scores. This repository
-  measures a handful of histories; it does not test a hypothesis, and no p-value appears
-  anywhere in it. Every ranking above should be read as a description of these five names.
+- **Six events are not a statistic, and only three can be tested.** Emeis, Adler and Casino
+  default before the data holds sixty ranked sessions; on the remaining three, six of nine
+  leads are lower bounds. This repository measures a handful of histories; it does not test
+  a hypothesis, and no p-value appears anywhere in it.
+- **About four years of accounts.** `yfinance` serves annual statements from FY2022 on;
+  FY2021 is all but empty. A longer history (company filings, a paid vendor) is the single
+  change that would turn untestable events into tests and lower bounds into measurements.
+- **Selection bias, both ways.** The six events were chosen because they happened, and they
+  are the European restructurings that made headlines; six of the seven controls are
+  investment-grade blue chips (LVMH, SAP, Nestle...). Separating a famous default from a
+  healthy blue chip is the easy version of the problem, and the stressed survivors that make it
+  hard (names that came close and recovered) are absent apart from Aroundtown.
+- **No point-in-time fundamentals.** The ninety-day lag fixes *when* a statement becomes
+  usable, not *what* it said: Yahoo serves the latest restated figures, not the ones first
+  published. A restatement after the fact leaks into every score built on accounts.
 - **Casino has no Altman score at all**, because a statement line the formula needs is not
   reported in its filings as loaded. A missing line is not a zero and not a NaN to be filled
   later, so the score refuses; the refusal and its reason are published on the report page
@@ -163,16 +214,23 @@ Stated because they matter more than the tables.
   deliberately not used: its X4 divides market capitalisation by book liabilities, which
   would make the score move daily and destroy the one comparison the study exists to make —
   annual accounting against daily market data.
-- **Emeis has no accounting score in time**, on either measure: its proceeding opened on
-  2022-04-20, weeks after FY2021 first became public under the ninety-day lag. A score that
-  needs a statement cannot beat an event that arrives before the statement does.
-- **The fallen-angel cross-check covers two names.** Only Atos and SBB ever fell below BBB-.
-  Casino and Adler were already speculative grade before the window, Emeis has no public S&P
-  rating, and Intrum was already below BBB-. Two observations are a cross-check, not a
-  statistic, and they are never averaged into the main table.
+- **Ohlson's size term is on the wrong base.** Total assets are converted to US dollars at
+  the rate of the day and divided by the US GNP price level, as Ohlson specifies, but on a
+  2017=100 base rather than his 1968=100. That shifts every name's O by the same constant,
+  which a rank rule ignores; it does not leave the textbook cut-off (O above zero, a
+  probability above one half) meaningful, which is why that cut-off is kept as an internal
+  control and never published as a result.
+- **The fallen-angel cross-check is untestable.** Only Atos and SBB ever fell below BBB-, on
+  2022-07-13 and 2023-05-08, both before the cross-section has sixty ranked sessions. It is
+  kept on the report page so the gap stays visible, and is never averaged into the main
+  table.
 - **Merton is estimated from equity, not from debt prices.** Distance-to-default here is the
   standard structural inversion of equity value and volatility; it inherits every assumption
   in that, including a single debt point and lognormal asset dynamics.
+- **Merton's share count lags.** Market capitalisation is price times the share count from
+  the latest public annual balance sheet, so it can be up to fifteen months stale. For
+  names that issued heavily in distress — rights issues, debt-for-equity swaps — equity
+  value and therefore distance-to-default are mismeasured until the next annual report.
 
 ## Related
 

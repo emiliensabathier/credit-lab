@@ -55,8 +55,8 @@ def test_the_report_names_every_refusal(pipeline_outputs):
         assert key in page
 
 
-def test_the_report_names_every_insufficient_history_refusal(pipeline_outputs):
+def test_the_report_names_every_untestable_event(pipeline_outputs):
     result, _robustness_table = pipeline_outputs
     page = render(result)
-    for key in result.insufficient:
+    for key in result.untestable:
         assert key in page

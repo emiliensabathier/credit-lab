@@ -8,10 +8,18 @@ import pandas as pd
 import pytest
 
 from clab.horserace import (
+    CENSORED,
+    MEASURED,
+    MISSED,
     PERSISTENCE_DAYS,
     TRADING_SESSIONS_PER_MONTH,
+    UNTESTABLE,
     alarm_date,
+    classify_lead,
+    eligible,
+    exclude_after,
     false_alarm_months,
+    forced_control_months,
     lead_months,
     raw_flags,
 )
@@ -116,3 +124,83 @@ def test_the_cross_section_becomes_rankable_once_enough_names_have_scores():
     assert not flags.iloc[:20].to_numpy().any()
     # After that all six carry scores, so the three riskiest are flagged.
     assert flags.iloc[20:].sum(axis=1).unique().tolist() == [3]
+
+
+def _eligible_from(index: pd.DatetimeIndex, start: int) -> pd.Series:
+    return pd.Series([False] * start + [True] * (len(index) - start), index=index)
+
+
+def test_an_event_with_too_little_rankable_history_is_untestable_not_missed():
+    index = pd.date_range("2023-01-02", periods=100, freq="B")
+    eligible = _eligible_from(index, 80)
+    flags = eligible.copy()
+    # Twenty eligible sessions before the target: fewer than the sixty required, so the
+    # score never had a fair chance and must not be scored as having missed.
+    lead = classify_lead(flags, eligible, index[99], persistence=PERSISTENCE_DAYS)
+    assert lead.status == UNTESTABLE
+    assert lead.months is None
+
+
+def test_an_alarm_on_the_first_possible_date_is_censored():
+    index = pd.date_range("2023-01-02", periods=200, freq="B")
+    eligible = _eligible_from(index, 10)
+    flags = eligible.copy()
+    lead = classify_lead(flags, eligible, index[-1], persistence=PERSISTENCE_DAYS)
+    # Flagged from the first rankable session, so the measured lead is a lower bound.
+    assert lead.status == CENSORED
+    assert lead.months == pytest.approx(lead_months(index[10 + PERSISTENCE_DAYS - 1], index[-1]))
+
+
+def test_an_alarm_after_the_first_possible_date_is_measured():
+    index = pd.date_range("2023-01-02", periods=200, freq="B")
+    eligible = _eligible_from(index, 10)
+    flags = _eligible_from(index, 100)
+    lead = classify_lead(flags, eligible, index[-1], persistence=PERSISTENCE_DAYS)
+    assert lead.status == MEASURED
+    assert lead.months == pytest.approx(lead_months(index[100 + PERSISTENCE_DAYS - 1], index[-1]))
+
+
+def test_a_testable_event_with_no_alarm_in_time_is_missed():
+    index = pd.date_range("2023-01-02", periods=200, freq="B")
+    eligible = _eligible_from(index, 10)
+    flags = pd.Series(False, index=index)
+    lead = classify_lead(flags, eligible, index[-1], persistence=PERSISTENCE_DAYS)
+    assert lead.status == MISSED
+    assert lead.months is None
+
+
+def test_eligibility_requires_a_score_and_a_rankable_cross_section():
+    index = pd.date_range("2023-01-02", periods=40, freq="B")
+    frame = pd.DataFrame({name: float(i) for i, name in enumerate("ABCDEF")}, index=index)
+    frame.loc[frame.index[:20], ["E", "F"]] = float("nan")
+    mask = eligible(frame)
+    assert not mask.iloc[:20].to_numpy().any()
+    assert mask.iloc[20:].to_numpy().all()
+
+
+def test_names_are_dropped_from_the_ranking_from_their_default_date():
+    index = pd.date_range("2023-01-02", periods=10, freq="B")
+    frame = pd.DataFrame({"X": 1.0, "Y": 2.0}, index=index)
+    masked = exclude_after(frame, {"X": index[4], "NOT.IN.FRAME": index[0]})
+    assert masked["X"].iloc[:4].notna().all()
+    assert masked["X"].iloc[4:].isna().all()
+    assert masked["Y"].notna().all()
+    # Immutability: the input frame is left untouched.
+    assert frame["X"].notna().all()
+
+
+def test_forced_control_months_counts_the_slots_stressed_names_cannot_fill():
+    index = pd.date_range("2023-01-02", periods=42, freq="B")
+    eligible_sessions = pd.DataFrame(
+        {"S1": True, "S2": [True] * 21 + [False] * 21, "C1": True, "C2": True}, index=index
+    )
+    # Three slots. Two stressed names alive for 21 sessions force one control in; one
+    # alive for the next 21 forces two: 21 + 42 = 63 control-sessions, three months.
+    months = forced_control_months(eligible_sessions, stressed=["S1", "S2"], n_riskiest=3)
+    assert months == pytest.approx(63 / TRADING_SESSIONS_PER_MONTH)
+
+
+def test_forced_control_months_ignores_dates_that_are_not_rankable():
+    index = pd.date_range("2023-01-02", periods=10, freq="B")
+    eligible_sessions = pd.DataFrame({"S1": False, "C1": False}, index=index)
+    assert forced_control_months(eligible_sessions, stressed=["S1"], n_riskiest=3) == 0.0

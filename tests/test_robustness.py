@@ -3,6 +3,7 @@
 import pandas as pd
 import pytest
 
+from clab.horserace import CENSORED, MEASURED, MISSED
 from clab.pipeline import SCORE_NAMES, VARIANTS, build_scores, robustness, run
 from clab.scores.thresholds import ALTMAN_DISTRESS, academic_flags
 from tests.conftest import synthetic_inputs
@@ -13,10 +14,10 @@ def test_robustness_reports_one_row_per_variant():
     # Shape alone would pass on six rows of garbage; the labels are what tie each row
     # to the convention it is supposed to represent.
     assert list(table.index) == [variant["label"] for variant in VARIANTS]
-    assert set(SCORE_NAMES).issubset(table.columns)
+    assert set(SCORE_NAMES).issubset(table.columns.get_level_values(0))
 
 
-def test_robustness_rows_are_the_medians_of_their_variant():
+def test_robustness_rows_summarise_their_variant_without_censored_leads():
     table = robustness(**synthetic_inputs())
     headline = VARIANTS[0]
     direct = run(
@@ -25,8 +26,16 @@ def test_robustness_rows_are_the_medians_of_their_variant():
         n_riskiest=headline["n_riskiest"],
         persistence=headline["persistence"],
     )
+    row = table.loc[headline["label"]]
     for name in SCORE_NAMES:
-        expected, actual = direct.leads[name].median(), table.loc[headline["label"], name]
+        status = direct.status[name]
+        assert row[(name, "testable")] == status.isin([MEASURED, CENSORED, MISSED]).sum()
+        assert row[(name, "in time")] == status.isin([MEASURED, CENSORED]).sum()
+        assert row[(name, "censored")] == (status == CENSORED).sum()
+        # The median is taken over measured leads only: a censored lead is a lower
+        # bound, and pooling lower bounds with measurements reports neither.
+        expected = direct.leads[name][status == MEASURED].median()
+        actual = row[(name, "median measured")]
         assert (pd.isna(expected) and pd.isna(actual)) or expected == pytest.approx(actual)
 
 
@@ -42,6 +51,7 @@ def test_variants_cover_the_two_conventions_named_in_the_spec():
 def test_secondary_leads_cover_only_the_two_fallen_angels():
     result = run(**synthetic_inputs())
     assert sorted(result.secondary.index) == ["ATO.PA", "SBB-B.ST"]
+    assert sorted(result.secondary_status.index) == ["ATO.PA", "SBB-B.ST"]
 
 
 def test_academic_flags_use_the_published_distress_levels():
@@ -62,10 +72,10 @@ def test_academic_flags_use_the_published_distress_levels():
 def test_a_name_without_enough_history_before_its_event_is_recorded():
     result = run(**synthetic_inputs())
     # Emeis' proceeding opens 2022-04-20, before any statement in the fixture has been
-    # published, so no accounting score can have MIN_OBSERVATIONS_BEFORE_EVENT points
-    # in front of it. This is the real finding the spec predicts, not a formality: the
-    # accounting scores are not computable in time for the fastest collapse.
-    assert any(key.endswith(":EMEIS.PA") for key in result.insufficient)
+    # published, so no score can have MIN_OBSERVATIONS_BEFORE_EVENT ranked sessions in
+    # front of it. That makes the event untestable: a statement about the data, not
+    # about the scores.
+    assert any(key.endswith(":EMEIS.PA") for key in result.untestable)
     assert result.leads.loc["EMEIS.PA", "altman"] is None or pd.isna(
         result.leads.loc["EMEIS.PA", "altman"]
     )
@@ -74,14 +84,13 @@ def test_a_name_without_enough_history_before_its_event_is_recorded():
 def test_the_guard_blanks_a_lead_it_has_declared_unmeasurable():
     result = run(**synthetic_inputs())
     # Emeis alone does not prove the guard works: its event predates every publication
-    # date, so `lead_months` already returns None by the ordinary path, and the Emeis
-    # assertion above would pass even with the blanking line deleted. Casino and Adler
-    # are the real test -- they DO produce a computed lead of roughly a month from only
-    # ~38 sessions of history, and the guard must blank it. Recording a refusal while
-    # still publishing the lead time is the failure mode this pins down.
-    assert any(key.endswith(":CO.PA") for key in result.insufficient)
-    assert any(key.endswith(":ADJ.DE") for key in result.insufficient)
-    for key in result.insufficient:
+    # date, so `lead_months` already returns None by the ordinary path. Casino is the
+    # real test -- it would produce a computed lead of roughly a month from only ~38
+    # ranked sessions, and the guard must blank it. Recording a refusal while still
+    # publishing the lead time is the failure mode this pins down.
+    assert any(key.endswith(":CO.PA") for key in result.untestable)
+    assert any(key.endswith(":ADJ.DE") for key in result.untestable)
+    for key in result.untestable:
         name, ticker = key.split(":")
         assert pd.isna(result.leads.loc[ticker, name]), f"{key} recorded but still published"
 
@@ -91,5 +100,6 @@ def test_prebuilt_scores_give_the_same_result_as_building_them():
     plain = run(**inputs)
     prebuilt = run(**inputs, prebuilt=build_scores(**inputs))
     pd.testing.assert_frame_equal(plain.leads, prebuilt.leads)
+    pd.testing.assert_frame_equal(plain.status, prebuilt.status)
     assert plain.false_alarms == prebuilt.false_alarms
     assert plain.common_sample == prebuilt.common_sample

@@ -6,6 +6,8 @@ offline. The frozen fixture in tests/fixtures/ is the separate, real-data guard.
 
 from __future__ import annotations
 
+import zlib
+
 import numpy as np
 import pandas as pd
 
@@ -36,7 +38,9 @@ def _company_data(ticker: str, drift: float, break_line: bool) -> CompanyData:
     ).T
     cashflow = pd.DataFrame({"Operating Cash Flow": [70.0 - drift, 80.0]}, index=years).T
 
-    rng = np.random.default_rng(abs(hash(ticker)) % (2**32))
+    # crc32 rather than hash(): str hashes are salted per process (PYTHONHASHSEED), so
+    # hash() would hand every test run a different price path.
+    rng = np.random.default_rng(zlib.crc32(ticker.encode()))
     steps = rng.normal(-drift / 5000.0, 0.01, len(CALENDAR))
     prices = pd.Series(50.0 * np.exp(np.cumsum(steps)), index=CALENDAR)
 

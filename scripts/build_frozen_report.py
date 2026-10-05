@@ -39,7 +39,9 @@ def main() -> None:
     print(f"wrote {OUTPUT} from the {frozen.CAPTURED} capture")
 
     CHART.parent.mkdir(parents=True, exist_ok=True)
-    lead_figure(result.leads).savefig(CHART, format="png", dpi=CHART_DPI, bbox_inches="tight")
+    lead_figure(result.leads, result.status).savefig(
+        CHART, format="png", dpi=CHART_DPI, bbox_inches="tight"
+    )
     print(f"wrote {CHART} ({CHART.stat().st_size:,} bytes)")
 
 
