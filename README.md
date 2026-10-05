@@ -176,12 +176,13 @@ Stated because they matter more than the tables.
 
 ## Related
 
-Three companion studies, same method: a frozen capture, a rendered report, and a
+Four companion studies, same method: a frozen capture, a rendered report, and a
 limitations section longer than the results.
 
 - [rates-lab](https://github.com/emiliensabathier/rates-lab) — what the yield curve prices: policy path, inflation, term premium
 - [valuation-lab](https://github.com/emiliensabathier/valuation-lab) — what a share price already assumes, by inverting a DCF
 - [portfolio-lab](https://github.com/emiliensabathier/portfolio-lab) — whether any allocation rule beats a static 60/40
+- [options-lab](https://github.com/emiliensabathier/options-lab) — what S&P 500 implied volatility prices: an arbitrage-free surface and the variance premium
 
 ## Licence
 
