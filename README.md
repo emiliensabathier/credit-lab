@@ -6,6 +6,16 @@ published on the same page.
 
 ![ci](https://github.com/emiliensabathier/credit-lab/actions/workflows/ci.yml/badge.svg)
 
+![Months of lead time per company and per score; hatched bars are lower bounds, and three companies are untestable](docs/lead-times.png)
+
+**In short**
+
+- Altman Z'', Ohlson O and Merton distance-to-default raced on six European court-supervised restructurings (2022–2024) and seven controls, strictly point-in-time.
+- Published as a null result: with free statements starting in FY2022 only three of the six events are testable, and the three measured lead times are one per score, so they rank nothing.
+- The one discriminating number is false alarms: Merton flags controls for 21.05 control-months, against about 10.6 for both accounting scores.
+
+Rendered report: <https://emiliensabathier.github.io/credit-lab/>
+
 ## Results
 
 Thirteen issuers: six that entered a court-supervised restructuring between 2022 and 2024,
@@ -39,8 +49,6 @@ date. Statements are treated as public ninety days after fiscal year end.
 | --- | --- | --- | --- |
 | false alarms | 10.67 | 10.52 | 21.05 |
 | forced by the rule | 12.48 | 12.48 | 12.48 |
-
-![Months of lead time per company and per score; hatched bars are lower bounds, and three companies are untestable](docs/lead-times.png)
 
 Full report with per-company charts, the event sources and the robustness grid:
 [`reports/horserace.html`](reports/horserace.html).
