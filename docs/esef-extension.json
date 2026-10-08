@@ -1,0 +1,1111 @@
+{
+  "captured": "2026-08-07",
+  "tolerance": 0.02,
+  "restated_comparatives": {
+    "restated": 14,
+    "compared": 381
+  },
+  "coverage": {
+    "ATO.PA": {
+      "filings": [
+        "2021-12-31",
+        "2022-12-31",
+        "2023-12-31",
+        "2024-12-31",
+        "2025-12-31"
+      ],
+      "lines": {
+        "Total Assets": {
+          "candidate": "Assets",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "Total Liabilities Net Minority Interest": {
+          "candidate": "EquityAndLiabilities - Equity",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "Current Assets": {
+          "candidate": "Assets - NoncurrentAssets",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "Current Liabilities": {
+          "candidate": null,
+          "added": []
+        },
+        "Working Capital": {
+          "candidate": null,
+          "added": []
+        },
+        "Retained Earnings": {
+          "candidate": null,
+          "added": []
+        },
+        "Stockholders Equity": {
+          "candidate": "EquityAttributableToOwnersOfParent",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "Ordinary Shares Number": {
+          "candidate": null,
+          "added": []
+        },
+        "Current Debt And Capital Lease Obligation": {
+          "candidate": "CurrentBorrowingsAndCurrentPortionOfNoncurrentBorrowings + CurrentLeaseLiabilities",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "Long Term Debt And Capital Lease Obligation": {
+          "candidate": "LongtermBorrowings + NoncurrentLeaseLiabilities",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "EBIT": {
+          "candidate": null,
+          "added": []
+        },
+        "Net Income": {
+          "candidate": "ProfitLossAttributableToOwnersOfParent",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "Operating Cash Flow": {
+          "candidate": "CashFlowsFromUsedInOperatingActivities",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        }
+      }
+    },
+    "CO.PA": {
+      "filings": [
+        "2021-12-31",
+        "2022-12-31",
+        "2024-12-31"
+      ],
+      "lines": {
+        "Total Assets": {
+          "candidate": "Assets",
+          "added": [
+            "2020-12-31"
+          ]
+        },
+        "Total Liabilities Net Minority Interest": {
+          "candidate": "EquityAndLiabilities - Equity",
+          "added": [
+            "2020-12-31"
+          ]
+        },
+        "Current Assets": {
+          "candidate": "CurrentAssets",
+          "added": [
+            "2020-12-31"
+          ]
+        },
+        "Current Liabilities": {
+          "candidate": "CurrentLiabilities",
+          "added": [
+            "2020-12-31"
+          ]
+        },
+        "Working Capital": {
+          "candidate": "CurrentAssets - CurrentLiabilities",
+          "added": [
+            "2020-12-31"
+          ]
+        },
+        "Retained Earnings": {
+          "candidate": null,
+          "added": []
+        },
+        "Stockholders Equity": {
+          "candidate": "EquityAttributableToOwnersOfParent",
+          "added": [
+            "2020-12-31"
+          ]
+        },
+        "Ordinary Shares Number": {
+          "candidate": null,
+          "added": []
+        },
+        "Current Debt And Capital Lease Obligation": {
+          "candidate": null,
+          "added": []
+        },
+        "Long Term Debt And Capital Lease Obligation": {
+          "candidate": null,
+          "added": []
+        },
+        "EBIT": {
+          "candidate": null,
+          "added": []
+        },
+        "Net Income": {
+          "candidate": "ProfitLossAttributableToOwnersOfParent",
+          "added": [
+            "2020-12-31"
+          ]
+        },
+        "Operating Cash Flow": {
+          "candidate": "CashFlowsFromUsedInOperatingActivities",
+          "added": [
+            "2020-12-31"
+          ]
+        }
+      }
+    },
+    "EMEIS.PA": {
+      "filings": [
+        "2021-12-31",
+        "2022-12-31",
+        "2023-12-31",
+        "2024-12-31",
+        "2025-12-31"
+      ],
+      "lines": {
+        "Total Assets": {
+          "candidate": "Assets",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "Total Liabilities Net Minority Interest": {
+          "candidate": "EquityAndLiabilities - Equity",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "Current Assets": {
+          "candidate": "Assets - NoncurrentAssets",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "Current Liabilities": {
+          "candidate": "CurrentLiabilities",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "Working Capital": {
+          "candidate": "Assets - NoncurrentAssets - CurrentLiabilities",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "Retained Earnings": {
+          "candidate": null,
+          "added": []
+        },
+        "Stockholders Equity": {
+          "candidate": "EquityAttributableToOwnersOfParent",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "Ordinary Shares Number": {
+          "candidate": null,
+          "added": []
+        },
+        "Current Debt And Capital Lease Obligation": {
+          "candidate": "CurrentBorrowingsAndCurrentPortionOfNoncurrentBorrowings + CurrentLeaseLiabilities",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "Long Term Debt And Capital Lease Obligation": {
+          "candidate": null,
+          "added": []
+        },
+        "EBIT": {
+          "candidate": null,
+          "added": []
+        },
+        "Net Income": {
+          "candidate": "ProfitLossAttributableToOwnersOfParent",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "Operating Cash Flow": {
+          "candidate": "CashFlowsFromUsedInOperatingActivities",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        }
+      }
+    },
+    "SBB-B.ST": {
+      "filings": [
+        "2021-12-31",
+        "2022-12-31"
+      ],
+      "lines": {
+        "Total Assets": {
+          "candidate": "Assets",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "Total Liabilities Net Minority Interest": {
+          "candidate": "EquityAndLiabilities - Equity",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "Current Assets": {
+          "candidate": "CurrentAssets",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "Current Liabilities": {
+          "candidate": "CurrentLiabilities",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "Working Capital": {
+          "candidate": "CurrentAssets - CurrentLiabilities",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "Retained Earnings": {
+          "candidate": null,
+          "added": []
+        },
+        "Stockholders Equity": {
+          "candidate": null,
+          "added": []
+        },
+        "Ordinary Shares Number": {
+          "candidate": null,
+          "added": []
+        },
+        "Current Debt And Capital Lease Obligation": {
+          "candidate": null,
+          "added": []
+        },
+        "Long Term Debt And Capital Lease Obligation": {
+          "candidate": null,
+          "added": []
+        },
+        "EBIT": {
+          "candidate": null,
+          "added": []
+        },
+        "Net Income": {
+          "candidate": "ProfitLossAttributableToOwnersOfParent",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "Operating Cash Flow": {
+          "candidate": "CashFlowsFromUsedInOperatingActivities",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        }
+      }
+    },
+    "ADJ.DE": {
+      "filings": [
+        "2021-12-31",
+        "2022-12-31",
+        "2024-12-31"
+      ],
+      "lines": {
+        "Total Assets": {
+          "candidate": "Assets",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "Total Liabilities Net Minority Interest": {
+          "candidate": "EquityAndLiabilities - Equity",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "Current Assets": {
+          "candidate": "CurrentAssets",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "Current Liabilities": {
+          "candidate": "CurrentLiabilities",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "Working Capital": {
+          "candidate": "CurrentAssets - CurrentLiabilities",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "Retained Earnings": {
+          "candidate": "RetainedEarnings",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "Stockholders Equity": {
+          "candidate": "EquityAttributableToOwnersOfParent",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "Ordinary Shares Number": {
+          "candidate": null,
+          "added": []
+        },
+        "Current Debt And Capital Lease Obligation": {
+          "candidate": null,
+          "added": []
+        },
+        "Long Term Debt And Capital Lease Obligation": {
+          "candidate": null,
+          "added": []
+        },
+        "EBIT": {
+          "candidate": null,
+          "added": []
+        },
+        "Net Income": {
+          "candidate": "ProfitLossAttributableToOwnersOfParent",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "Operating Cash Flow": {
+          "candidate": "CashFlowsFromUsedInOperatingActivities",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        }
+      }
+    },
+    "INTRUM.ST": {
+      "filings": [
+        "2021-12-31",
+        "2022-12-31",
+        "2023-12-31",
+        "2024-12-31"
+      ],
+      "lines": {
+        "Total Assets": {
+          "candidate": "Assets",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "Total Liabilities Net Minority Interest": {
+          "candidate": "Liabilities",
+          "added": []
+        },
+        "Current Assets": {
+          "candidate": "CurrentAssets",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "Current Liabilities": {
+          "candidate": "CurrentLiabilities",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "Working Capital": {
+          "candidate": "CurrentAssets - CurrentLiabilities",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "Retained Earnings": {
+          "candidate": null,
+          "added": []
+        },
+        "Stockholders Equity": {
+          "candidate": "EquityAttributableToOwnersOfParent",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "Ordinary Shares Number": {
+          "candidate": null,
+          "added": []
+        },
+        "Current Debt And Capital Lease Obligation": {
+          "candidate": "ShorttermBorrowings + CurrentPortionOfLongtermBorrowings + CurrentLeaseLiabilities",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "Long Term Debt And Capital Lease Obligation": {
+          "candidate": "LongtermBorrowings + NoncurrentLeaseLiabilities",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "EBIT": {
+          "candidate": null,
+          "added": []
+        },
+        "Net Income": {
+          "candidate": "ProfitLossAttributableToOwnersOfParent",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "Operating Cash Flow": {
+          "candidate": null,
+          "added": []
+        }
+      }
+    },
+    "MC.PA": {
+      "filings": [
+        "2021-12-31",
+        "2022-12-31",
+        "2023-12-31",
+        "2024-12-31"
+      ],
+      "lines": {
+        "Total Assets": {
+          "candidate": "Assets",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "Total Liabilities Net Minority Interest": {
+          "candidate": "EquityAndLiabilities - Equity",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "Current Assets": {
+          "candidate": "CurrentAssets",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "Current Liabilities": {
+          "candidate": "CurrentLiabilities",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "Working Capital": {
+          "candidate": "CurrentAssets - CurrentLiabilities",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "Retained Earnings": {
+          "candidate": null,
+          "added": []
+        },
+        "Stockholders Equity": {
+          "candidate": "EquityAttributableToOwnersOfParent",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "Ordinary Shares Number": {
+          "candidate": null,
+          "added": []
+        },
+        "Current Debt And Capital Lease Obligation": {
+          "candidate": null,
+          "added": []
+        },
+        "Long Term Debt And Capital Lease Obligation": {
+          "candidate": "LongtermBorrowings + NoncurrentLeaseLiabilities",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "EBIT": {
+          "candidate": null,
+          "added": []
+        },
+        "Net Income": {
+          "candidate": "ProfitLossAttributableToOwnersOfParent",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "Operating Cash Flow": {
+          "candidate": "CashFlowsFromUsedInOperatingActivities",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        }
+      }
+    },
+    "SAP.DE": {
+      "filings": [],
+      "lines": {
+        "Total Assets": {
+          "candidate": null,
+          "added": []
+        },
+        "Total Liabilities Net Minority Interest": {
+          "candidate": null,
+          "added": []
+        },
+        "Current Assets": {
+          "candidate": null,
+          "added": []
+        },
+        "Current Liabilities": {
+          "candidate": null,
+          "added": []
+        },
+        "Working Capital": {
+          "candidate": null,
+          "added": []
+        },
+        "Retained Earnings": {
+          "candidate": null,
+          "added": []
+        },
+        "Stockholders Equity": {
+          "candidate": null,
+          "added": []
+        },
+        "Ordinary Shares Number": {
+          "candidate": null,
+          "added": []
+        },
+        "Current Debt And Capital Lease Obligation": {
+          "candidate": null,
+          "added": []
+        },
+        "Long Term Debt And Capital Lease Obligation": {
+          "candidate": null,
+          "added": []
+        },
+        "EBIT": {
+          "candidate": null,
+          "added": []
+        },
+        "Net Income": {
+          "candidate": null,
+          "added": []
+        },
+        "Operating Cash Flow": {
+          "candidate": null,
+          "added": []
+        }
+      }
+    },
+    "AI.PA": {
+      "filings": [
+        "2021-12-31",
+        "2022-12-31",
+        "2023-12-31",
+        "2024-12-31"
+      ],
+      "lines": {
+        "Total Assets": {
+          "candidate": "Assets",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "Total Liabilities Net Minority Interest": {
+          "candidate": "EquityAndLiabilities - Equity",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "Current Assets": {
+          "candidate": "Assets - NoncurrentAssets",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "Current Liabilities": {
+          "candidate": null,
+          "added": []
+        },
+        "Working Capital": {
+          "candidate": null,
+          "added": []
+        },
+        "Retained Earnings": {
+          "candidate": null,
+          "added": []
+        },
+        "Stockholders Equity": {
+          "candidate": "EquityAttributableToOwnersOfParent",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "Ordinary Shares Number": {
+          "candidate": null,
+          "added": []
+        },
+        "Current Debt And Capital Lease Obligation": {
+          "candidate": "CurrentBorrowingsAndCurrentPortionOfNoncurrentBorrowings + CurrentLeaseLiabilities",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "Long Term Debt And Capital Lease Obligation": {
+          "candidate": "LongtermBorrowings + NoncurrentLeaseLiabilities",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "EBIT": {
+          "candidate": null,
+          "added": []
+        },
+        "Net Income": {
+          "candidate": "ProfitLossAttributableToOwnersOfParent",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "Operating Cash Flow": {
+          "candidate": "CashFlowsFromUsedInOperatingActivities",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        }
+      }
+    },
+    "NESN.SW": {
+      "filings": [],
+      "lines": {
+        "Total Assets": {
+          "candidate": null,
+          "added": []
+        },
+        "Total Liabilities Net Minority Interest": {
+          "candidate": null,
+          "added": []
+        },
+        "Current Assets": {
+          "candidate": null,
+          "added": []
+        },
+        "Current Liabilities": {
+          "candidate": null,
+          "added": []
+        },
+        "Working Capital": {
+          "candidate": null,
+          "added": []
+        },
+        "Retained Earnings": {
+          "candidate": null,
+          "added": []
+        },
+        "Stockholders Equity": {
+          "candidate": null,
+          "added": []
+        },
+        "Ordinary Shares Number": {
+          "candidate": null,
+          "added": []
+        },
+        "Current Debt And Capital Lease Obligation": {
+          "candidate": null,
+          "added": []
+        },
+        "Long Term Debt And Capital Lease Obligation": {
+          "candidate": null,
+          "added": []
+        },
+        "EBIT": {
+          "candidate": null,
+          "added": []
+        },
+        "Net Income": {
+          "candidate": null,
+          "added": []
+        },
+        "Operating Cash Flow": {
+          "candidate": null,
+          "added": []
+        }
+      }
+    },
+    "SIE.DE": {
+      "filings": [],
+      "lines": {
+        "Total Assets": {
+          "candidate": null,
+          "added": []
+        },
+        "Total Liabilities Net Minority Interest": {
+          "candidate": null,
+          "added": []
+        },
+        "Current Assets": {
+          "candidate": null,
+          "added": []
+        },
+        "Current Liabilities": {
+          "candidate": null,
+          "added": []
+        },
+        "Working Capital": {
+          "candidate": null,
+          "added": []
+        },
+        "Retained Earnings": {
+          "candidate": null,
+          "added": []
+        },
+        "Stockholders Equity": {
+          "candidate": null,
+          "added": []
+        },
+        "Ordinary Shares Number": {
+          "candidate": null,
+          "added": []
+        },
+        "Current Debt And Capital Lease Obligation": {
+          "candidate": null,
+          "added": []
+        },
+        "Long Term Debt And Capital Lease Obligation": {
+          "candidate": null,
+          "added": []
+        },
+        "EBIT": {
+          "candidate": null,
+          "added": []
+        },
+        "Net Income": {
+          "candidate": null,
+          "added": []
+        },
+        "Operating Cash Flow": {
+          "candidate": null,
+          "added": []
+        }
+      }
+    },
+    "UNA.AS": {
+      "filings": [
+        "2021-12-31",
+        "2022-12-31",
+        "2023-12-31",
+        "2024-12-31",
+        "2025-12-31"
+      ],
+      "lines": {
+        "Total Assets": {
+          "candidate": "Assets",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "Total Liabilities Net Minority Interest": {
+          "candidate": "Liabilities",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "Current Assets": {
+          "candidate": "CurrentAssets",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "Current Liabilities": {
+          "candidate": "CurrentLiabilities",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "Working Capital": {
+          "candidate": "CurrentAssets - CurrentLiabilities",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "Retained Earnings": {
+          "candidate": null,
+          "added": []
+        },
+        "Stockholders Equity": {
+          "candidate": "EquityAttributableToOwnersOfParent",
+          "added": [
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "Ordinary Shares Number": {
+          "candidate": null,
+          "added": []
+        },
+        "Current Debt And Capital Lease Obligation": {
+          "candidate": null,
+          "added": []
+        },
+        "Long Term Debt And Capital Lease Obligation": {
+          "candidate": null,
+          "added": []
+        },
+        "EBIT": {
+          "candidate": null,
+          "added": []
+        },
+        "Net Income": {
+          "candidate": "ProfitLossAttributableToOwnersOfParent",
+          "added": [
+            "2019-12-31",
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        },
+        "Operating Cash Flow": {
+          "candidate": "CashFlowsFromUsedInOperatingActivities",
+          "added": [
+            "2019-12-31",
+            "2020-12-31",
+            "2021-12-31"
+          ]
+        }
+      }
+    },
+    "AT1.DE": {
+      "filings": [
+        "2022-12-31",
+        "2023-12-31",
+        "2024-12-31"
+      ],
+      "lines": {
+        "Total Assets": {
+          "candidate": "Assets",
+          "added": [
+            "2021-12-31"
+          ]
+        },
+        "Total Liabilities Net Minority Interest": {
+          "candidate": "Liabilities",
+          "added": [
+            "2021-12-31"
+          ]
+        },
+        "Current Assets": {
+          "candidate": "CurrentAssets",
+          "added": [
+            "2021-12-31"
+          ]
+        },
+        "Current Liabilities": {
+          "candidate": "CurrentLiabilities",
+          "added": [
+            "2021-12-31"
+          ]
+        },
+        "Working Capital": {
+          "candidate": "CurrentAssets - CurrentLiabilities",
+          "added": [
+            "2021-12-31"
+          ]
+        },
+        "Retained Earnings": {
+          "candidate": null,
+          "added": []
+        },
+        "Stockholders Equity": {
+          "candidate": null,
+          "added": []
+        },
+        "Ordinary Shares Number": {
+          "candidate": null,
+          "added": []
+        },
+        "Current Debt And Capital Lease Obligation": {
+          "candidate": null,
+          "added": []
+        },
+        "Long Term Debt And Capital Lease Obligation": {
+          "candidate": null,
+          "added": []
+        },
+        "EBIT": {
+          "candidate": null,
+          "added": []
+        },
+        "Net Income": {
+          "candidate": null,
+          "added": []
+        },
+        "Operating Cash Flow": {
+          "candidate": "CashFlowsFromUsedInOperatingActivities",
+          "added": [
+            "2021-12-31"
+          ]
+        }
+      }
+    }
+  },
+  "leads": {
+    "ATO.PA": {
+      "altman": 10.545335085413928,
+      "ohlson": 10.545335085413928,
+      "merton": 10.808147174770038
+    },
+    "CO.PA": {
+      "altman": null,
+      "ohlson": 24.868593955321945,
+      "merton": null
+    },
+    "EMEIS.PA": {
+      "altman": null,
+      "ohlson": 11.695137976346912,
+      "merton": null
+    },
+    "SBB-B.ST": {
+      "altman": 14.060446780551905,
+      "ohlson": 12.3850197109067,
+      "merton": 14.060446780551905
+    },
+    "ADJ.DE": {
+      "altman": null,
+      "ohlson": 23.423127463863338,
+      "merton": null
+    },
+    "INTRUM.ST": {
+      "altman": 18.495400788436267,
+      "ohlson": 18.495400788436267,
+      "merton": 7.128777923784494
+    }
+  },
+  "status": {
+    "ATO.PA": {
+      "altman": "measured",
+      "ohlson": "measured",
+      "merton": "censored"
+    },
+    "CO.PA": {
+      "altman": "no score",
+      "ohlson": "censored",
+      "merton": "untestable"
+    },
+    "EMEIS.PA": {
+      "altman": "untestable",
+      "ohlson": "censored",
+      "merton": "untestable"
+    },
+    "SBB-B.ST": {
+      "altman": "censored",
+      "ohlson": "measured",
+      "merton": "censored"
+    },
+    "ADJ.DE": {
+      "altman": "untestable",
+      "ohlson": "censored",
+      "merton": "untestable"
+    },
+    "INTRUM.ST": {
+      "altman": "censored",
+      "ohlson": "censored",
+      "merton": "measured"
+    }
+  },
+  "false_alarms": {
+    "altman": 10.666666666666666,
+    "ohlson": 12.761904761904763,
+    "merton": 21.047619047619047
+  },
+  "forced_false_alarms": {
+    "altman": 12.476190476190476,
+    "ohlson": 12.476190476190476,
+    "merton": 12.476190476190476
+  },
+  "failures": {
+    "altman:CO.PA": "CO.PA: statement line 'Retained Earnings' is not reported"
+  },
+  "untestable": {
+    "altman:EMEIS.PA": "EMEIS.PA: only 0 ranked altman sessions before 2022-04-20, 60 required; the event is untestable on this data, which says nothing about the score",
+    "altman:ADJ.DE": "ADJ.DE: only 6 ranked altman sessions before 2023-04-12, 60 required; the event is untestable on this data, which says nothing about the score",
+    "merton:CO.PA": "CO.PA: only 37 ranked merton sessions before 2023-05-26, 60 required; the event is untestable on this data, which says nothing about the score",
+    "merton:EMEIS.PA": "EMEIS.PA: only 0 ranked merton sessions before 2022-04-20, 60 required; the event is untestable on this data, which says nothing about the score",
+    "merton:ADJ.DE": "ADJ.DE: only 6 ranked merton sessions before 2023-04-12, 60 required; the event is untestable on this data, which says nothing about the score"
+  }
+}

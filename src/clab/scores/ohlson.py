@@ -68,6 +68,14 @@ def score(
     operating_cash = line(data.cashflow, "Operating Cash Flow", ticker)
 
     fiscal_ends = sorted(assets.dropna().index)
+    # A statement with no column for a year reads as NaN there, as a NaN cell already does,
+    # so that year scores NaN instead of failing the whole name.
+    (liabilities, working_capital, current_assets, current_liabilities, net_income,
+     operating_cash) = (
+        series.reindex(fiscal_ends)
+        for series in (liabilities, working_capital, current_assets, current_liabilities,
+                       net_income, operating_cash)
+    )
     values: dict[pd.Timestamp, float] = {}
     for position, end in enumerate(fiscal_ends):
         rate = float(fx.asof(end))

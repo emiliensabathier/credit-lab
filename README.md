@@ -128,6 +128,45 @@ three against the riskiest four. Censored leads are excluded from the median rat
 pooled with measurements. **No convention produces a ranking of the scores by lead time that
 means anything, and this reads as a null result.**
 
+## Extended run: the issuers' own filings, back to FY2020
+
+The headline stays on the frozen Yahoo capture it was registered on. This is a second,
+labelled run on the same capture plus the annual reports the issuers filed in ESEF, the
+EU's machine-readable format, read from [filings.xbrl.org](https://filings.xbrl.org)
+(`clab.data.esef`, `python scripts/build_esef_extension.py`, output in
+[`docs/esef-extension.json`](docs/esef-extension.json)).
+
+- **A line is only extended if it reproduces Yahoo.** For each statement line the run
+  tries a short list of IFRS concepts and identities, and keeps the first one that falls
+  within 2% of Yahoo on every year both sources report. Only the years Yahoo lacks are
+  added; where both exist, Yahoo's figure is kept.
+- **What that buys.** Every Ohlson input is extended to FY2020 for Casino, Emeis, SBB,
+  Adler, LVMH and Unilever. Atos and Air Liquide lack a matching working-capital and
+  current-liabilities line, Intrum lacks liabilities and operating cash flow, Aroundtown's
+  filings start at FY2022 and no concept matches its net income. SAP, Nestle and Siemens
+  carry no LEI in the universe and are not extended. No
+  IFRS concept reproduces Yahoo's EBIT or share count, so Altman and Merton gain nothing.
+- **Restatements.** Comparing each filing's prior-year column with the previous year's own
+  report, 14 of 381 figures moved by more than 2%.
+
+| | Altman | Ohlson | Merton |
+| --- | --- | --- | --- |
+| Atos | **10.55** | **10.55** | ≥ 10.81 |
+| Casino Guichard | no score | ≥ 24.87 | untestable |
+| Emeis | untestable | ≥ 11.70 | untestable |
+| Samhallsbyggnadsbolaget | ≥ 14.06 | **12.39** | ≥ 14.06 |
+| Adler Group | untestable | ≥ 23.42 | untestable |
+| Intrum | ≥ 18.50 | ≥ 18.50 | **7.13** |
+| false alarms (control-months) | 10.67 | 12.76 | 21.05 |
+
+Ohlson becomes testable on all six events and flags all six in time, but the three new
+leads are censored at the first date FY2020 statements allowed an alarm (spring 2021), so they
+are lower bounds, not measurements. On Atos the longer history moves Ohlson's alarm from the
+first possible date to a measured 10.55 months. Its false alarms rise from 10.52 to 12.76
+because the window now opens two years earlier and more control-months are counted. Altman
+and Merton are unchanged. The extension turns three untestable cells into lower bounds and
+does not change the conclusion: no ranking of the scores by lead time.
+
 ## Method
 
 - **Universe frozen before the first run.** `src/clab/universe.py` was committed before any

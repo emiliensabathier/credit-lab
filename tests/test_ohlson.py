@@ -71,3 +71,33 @@ def test_score_is_a_staircase_that_starts_at_publication():
     assert series.loc[pd.Timestamp("2023-03-31")] == series.loc[pd.Timestamp("2024-03-29")]
     assert series.loc[pd.Timestamp("2024-03-30")] != series.loc[pd.Timestamp("2024-03-29")]
     assert series.loc[pd.Timestamp("2023-01-01")] != series.loc[pd.Timestamp("2023-01-01")]  # NaN
+
+
+def test_a_year_missing_from_one_statement_scores_nan_instead_of_failing():
+    from clab.data.loader import CompanyData
+    from clab.scores.ohlson import score
+    from clab.universe import by_ticker
+
+    years = [pd.Timestamp("2023-12-31"), pd.Timestamp("2022-12-31")]
+    balance = pd.DataFrame(
+        {
+            "Total Assets": [1000.0, 900.0],
+            "Total Liabilities Net Minority Interest": [600.0, 550.0],
+            "Working Capital": [100.0, 90.0],
+            "Current Assets": [300.0, 280.0],
+            "Current Liabilities": [250.0, 240.0],
+        },
+        index=years,
+    ).T
+    income = pd.DataFrame({"Net Income": [50.0, 45.0]}, index=years).T
+    # The cash flow statement has no 2022 column at all, as when a balance sheet is
+    # extended from a filing that the cash flow line could not be validated against.
+    cashflow = pd.DataFrame({"Operating Cash Flow": [70.0]}, index=years[:1]).T
+    data = CompanyData(by_ticker("MC.PA"), balance, income, cashflow, pd.Series(dtype=float))
+    history = pd.date_range("2022-01-01", "2024-12-31", freq="D")
+
+    series = score(data, pd.date_range("2023-01-01", "2024-12-31", freq="D"),
+                   pd.Series(120.0, index=history), pd.Series(1.1, index=history))
+
+    assert series.loc["2023-03-31":"2024-03-29"].isna().all()
+    assert series.loc["2024-03-30":].notna().all()

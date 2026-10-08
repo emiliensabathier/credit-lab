@@ -1,0 +1,72 @@
+{
+ "2021-12-31": {
+  "2019-12-31": {
+   "ifrs-full:Equity": 30896000000.0
+  },
+  "2020-12-31": {
+   "ifrs-full:Assets": 120231000000.0,
+   "ifrs-full:CashFlowsFromUsedInOperatingActivities": -6763000000.0,
+   "ifrs-full:CurrentAssets": 16338000000.0,
+   "ifrs-full:CurrentLiabilities": 12602000000.0,
+   "ifrs-full:CurrentPortionOfLongtermBorrowings": 69000000.0,
+   "ifrs-full:Equity": 51756000000.0,
+   "ifrs-full:EquityAndLiabilities": 120231000000.0,
+   "ifrs-full:EquityAttributableToOwnersOfParent": 36865000000.0,
+   "ifrs-full:NoncurrentAssets": 103893000000.0,
+   "ifrs-full:NoncurrentLeaseLiabilities": 614000000.0,
+   "ifrs-full:ProfitLossAttributableToOwnersOfParent": 8598000000.0,
+   "ifrs-full:ProfitLossFromOperatingActivities": 3479000000.0,
+   "ifrs-full:RetainedEarnings": 12826000000.0
+  },
+  "2021-12-31": {
+   "ifrs-full:Assets": 194517000000.0,
+   "ifrs-full:CashFlowsFromUsedInOperatingActivities": 4620000000.0,
+   "ifrs-full:CurrentAssets": 12887000000.0,
+   "ifrs-full:CurrentLiabilities": 26264000000.0,
+   "ifrs-full:CurrentPortionOfLongtermBorrowings": 1758000000.0,
+   "ifrs-full:Equity": 82971000000.0,
+   "ifrs-full:EquityAndLiabilities": 194517000000.0,
+   "ifrs-full:EquityAttributableToOwnersOfParent": 62148000000.0,
+   "ifrs-full:NoncurrentAssets": 181630000000.0,
+   "ifrs-full:NoncurrentLeaseLiabilities": 639000000.0,
+   "ifrs-full:ProfitLossAttributableToOwnersOfParent": 24583000000.0,
+   "ifrs-full:ProfitLossFromOperatingActivities": 4047000000.0,
+   "ifrs-full:RetainedEarnings": 34778000000.0
+  }
+ },
+ "2022-12-31": {
+  "2020-12-31": {
+   "ifrs-full:Equity": 51756000000.0
+  },
+  "2021-12-31": {
+   "ifrs-full:Assets": 194517000000.0,
+   "ifrs-full:CashFlowsFromUsedInOperatingActivities": 4612000000.0,
+   "ifrs-full:CurrentAssets": 12887000000.0,
+   "ifrs-full:CurrentLiabilities": 26264000000.0,
+   "ifrs-full:CurrentPortionOfLongtermBorrowings": 1758000000.0,
+   "ifrs-full:Equity": 82971000000.0,
+   "ifrs-full:EquityAndLiabilities": 194517000000.0,
+   "ifrs-full:EquityAttributableToOwnersOfParent": 62148000000.0,
+   "ifrs-full:NoncurrentAssets": 181630000000.0,
+   "ifrs-full:NoncurrentLeaseLiabilities": 639000000.0,
+   "ifrs-full:ProfitLossAttributableToOwnersOfParent": 24583000000.0,
+   "ifrs-full:ProfitLossFromOperatingActivities": 6485000000.0,
+   "ifrs-full:RetainedEarnings": 34778000000.0
+  },
+  "2022-12-31": {
+   "ifrs-full:Assets": 168370000000.0,
+   "ifrs-full:CashFlowsFromUsedInOperatingActivities": 2120000000.0,
+   "ifrs-full:CurrentAssets": 7286000000.0,
+   "ifrs-full:CurrentLiabilities": 15762000000.0,
+   "ifrs-full:CurrentPortionOfLongtermBorrowings": 3400000000.0,
+   "ifrs-full:Equity": 63337000000.0,
+   "ifrs-full:EquityAndLiabilities": 168370000000.0,
+   "ifrs-full:EquityAttributableToOwnersOfParent": 44319000000.0,
+   "ifrs-full:NoncurrentAssets": 161084000000.0,
+   "ifrs-full:NoncurrentLeaseLiabilities": 829000000.0,
+   "ifrs-full:ProfitLossAttributableToOwnersOfParent": -9634000000.0,
+   "ifrs-full:ProfitLossFromOperatingActivities": 2462000000.0,
+   "ifrs-full:RetainedEarnings": 17424000000.0
+  }
+ }
+}
